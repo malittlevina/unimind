@@ -124,7 +124,14 @@
     "default": {
         "default_prompt": "Enter your prompt here",
         "default_include_all_files": false,
-        "default_include_entire_project_structure": true
+        "default_include_entire_project_structure": true,
+        "default_output_format": "json"
+    },
+    "project_metadata": {
+        "project_name": "Unimind",
+        "version": "1.0.0",
+        "description": "Unimind AI architecture with symbolic brain node modeling.",
+        "maintainer": "Michael Matovina"
     },
     "included_patterns": [
         "build.gradle",

@@ -1,5 +1,3 @@
-
-
 {
   "daemon_identity": {
     "name": "Prometheus",
@@ -25,6 +23,7 @@
     },
     "memory_link": "unimind/memory/memory_graph.py",
     "soul_logic_module": "unimind/soul/tenets.py",
-    "personality_manifest": "unimind/daemon_web/persona_manifest.json"
+    "personality_manifest": "unimind/daemon_web/persona_manifest.json",
+    "main_runtime_entry": "unimind/main.py"
   }
 }

@@ -1,80 +1,136 @@
 .
-├── .DS_Store
 ├── .snapshots
 │   ├── config.json
 │   ├── readme.md
 │   └── sponsors.md
-├── README.md
+├── actuators
+│   └── device_actions.py
+├── api
+│   ├── calendary_sync.py
+│   ├── external_ai_bridge.py
+│   └── notion_connector.py
+├── bridge
+│   ├── daemon_gateway.py
+│   ├── scroll_bridge.py
+│   └── unimind_sync.py
+├── context
+│   └── context_model.py
+├── core
+│   ├── loader.py
+│   ├── symbolic_map.py
+│   └── unimind.py
+├── cortex
+│   ├── cerebellum.py
+│   ├── motor_cortex.py
+│   └── prefrontal_cortex.py
+├── daemon_web
+│   ├── core_router.py
+│   ├── persona_manifest.json
+│   └── personas
+│       ├── persona_01.py
+│       ├── persona_02.py
+│       ├── persona_03.py
+│       ├── persona_04.py
+│       ├── persona_05.py
+│       ├── persona_06.py
+│       ├── persona_07.py
+│       ├── persona_08.py
+│       └── persona_09.py
+├── devices
+│   ├── codex_shard_bridge.py
+│   ├── device_registry.py
+│   └── prosthetic_interface.py
+├── docs
+│   ├── architecture_map.md
+│   ├── README.md
+│   ├── symbolic_language_guide.md
+│   └── unimind_brain_nodes.png
+├── emotion
+│   ├── __init__.py
+│   ├── amygdala.py
+│   └── emotion_classifier.py
+├── ethics
+│   └── pineal_gland.py
+├── expression
+│   ├── __init__.py
+│   ├── text_to_3d.py
+│   └── text_to_video.py
+├── feedback
+│   ├── emotiona_trace.py
+│   └── ritual_feedback.py
+├── interfaces
+│   └── system_control.py
+├── language
+│   ├── __init__.py
+│   ├── lam_engine.py
+│   ├── llm_engine.py
+│   └── text_to_text.py
+├── logic
+│   ├── __init__.py
+│   ├── symbolic_reasoner.py
+│   ├── text_to_logic.py
+│   └── text_to_shell.py
+├── memory
+│   ├── __init__.py
+│   ├── hippocampus.py
+│   ├── memory_graph.py
+│   ├── short_term.py
+│   └── text_to_sql.py
+├── perception
+│   ├── __init__.py
+│   ├── brocas_area.py
+│   ├── occipital_lobe.py
+│   ├── temporal_lobe.py
+│   ├── vision_model.py
+│   ├── voice_model.py
+│   └── wernickes_area.py
+├── persistence
+│   ├── cloud_backup.py
+│   ├── restore_handler.py
+│   └── state_server.py
+├── planning
+│   ├── __init__.py
+│   ├── action_planner.py
+│   └── text_to_code.py
 ├── repo_structure.txt
-└── unimind
-    ├── .DS_Store
-    ├── .snapshots
-    │   ├── config.json
-    │   ├── readme.md
-    │   └── sponsors.md
-    ├── actuators
-    │   └── device_actions.py
-    ├── core
-    │   ├── loader.py
-    │   ├── symbolic_map.py
-    │   └── unimind.py
-    ├── cortex
-    │   ├── cerebellum.py
-    │   ├── motor_cortex.py
-    │   └── prefrontal_cortex.py
-    ├── daemon_web
-    │   ├── core_router.py
-    │   ├── persona_manifest.json
-    │   └── personas
-    │       ├── persona_01.py
-    │       ├── persona_02.py
-    │       ├── persona_03.py
-    │       ├── persona_04.py
-    │       ├── persona_05.py
-    │       ├── persona_06.py
-    │       ├── persona_07.py
-    │       ├── persona_08.py
-    │       └── persona_09.py
-    ├── emotion
-    │   └── amygdala.py
-    ├── ethics
-    │   └── pineal_gland.py
-    ├── interfaces
-    │   └── system_control.py
-    ├── language
-    │   └── lam_engine.py
-    ├── logic
-    │   └── symbolic_reasoner.py
-    ├── memory
-    │   ├── hippocampus.py
-    │   ├── memory_graph.py
-    │   └── short_term.py
-    ├── models
-    │   ├── context_model.py
-    │   ├── emotion_classifier.py
-    │   ├── lam_engine.py
-    │   ├── llm_engine.py
-    │   ├── text_to_3d.py
-    │   ├── text_to_code.py
-    │   ├── text_to_logic.py
-    │   ├── text_to_shell.py
-    │   ├── text_to_sql.py
-    │   ├── text_to_text.py
-    │   ├── text_to_video.py
-    │   ├── vision_model.py
-    │   └── voice_model.py
-    ├── perception
-    │   ├── brocas_area.py
-    │   ├── occipital_lobe.py
-    │   └── wernickes_area.py
-    ├── planning
-    │   └── action_planner.py
-    ├── scrolls
-    │   └── scroll_engine.py
-    ├── soul
-    │   ├── foundation_manifest.json
-    │   └── tenets.py
-    └── todo
-        └── tasks.md
+├── rituals
+│   ├── invoke_conditionals.py
+│   ├── scroll_index.yaml
+│   └── trigger_rituals.json
+├── runtime
+│   ├── heartbeat_loop.py
+│   ├── startup_sequence.py
+│   └── watchdog.py
+├── scrolls
+│   └── scroll_engine.py
+├── security
+│   ├── encryption_service.py
+│   ├── ethical_firewall.py
+│   └── permission_validator.py
+├── sensors
+│   ├── camera_stream.py
+│   ├── mic_listener.py
+│   └── sensor_config.py
+├── soul
+│   ├── foundation_manifest.json
+│   └── tenets.py
+├── tests
+│   ├── test_memory_graph.py
+│   ├── test_scroll_engine.py
+│   └── test_unimind.py
+├── todo
+│   └── tasks.md
+├── training
+│   ├── daemon_rl_trainer.py
+│   ├── log_performance.py
+│   └── prompt_improvement.py
+├── vision
+│   ├── emotion_overlay.py
+│   ├── object_tracker.py
+│   └── scene_classifier.py
+└── voice
+    ├── ambient_classifier.py
+    ├── mic_listener.py
+    └── speech_to_scroll.py
 
-21 directories, 57 files
+34 directories, 100 files

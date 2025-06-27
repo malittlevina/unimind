@@ -86,8 +86,17 @@ def get_scroll_stats(name):
 # Dynamically creates new scroll logic based on templates and goals.
 
 def compose_scroll_from_goal(goal):
-    # Placeholder logic
-    return f"generated_scroll_for_{goal.replace(' ', '_')}"
+    components = goal.lower().split()
+    scroll_steps = []
+    for component in components:
+        if "optimize" in component:
+            scroll_steps.extend(["introspect_core", "refactor_modules"])
+        elif "calm" in component:
+            scroll_steps.extend(["breathe_focus", "clear_emotion"])
+    generated_scroll = list(dict.fromkeys(scroll_steps))  # Deduplicate
+    name = f"generated_scroll_{'_'.join(components)}"
+    define_scroll(name, lambda ctx: [cast_scroll(s, ctx) for s in generated_scroll], category="generated", ethical_weight=0.4)
+    return name
 
 # Scroll Errors
 # Custom error classes for scroll casting.
@@ -101,9 +110,18 @@ class ScrollExecutionError(Exception):
 class ScrollEthicalFailure(Exception):
     pass
 
+def clear_emotion(context=None):
+    print("Clearing emotional cache...")
+define_scroll("clear_emotion", clear_emotion, category="emotion", ethical_weight=0.4)
+
 def introspect_core(context=None):
     print("Performing core introspection...")
 define_scroll("introspect_core", introspect_core, category="self", ethical_weight=0.5)
+
+def register_ritual_templates():
+    for ritual_name, steps in ritual_templates.items():
+        define_scroll(ritual_name, lambda ctx, s=steps: [cast_scroll(step, ctx) for step in s], category="ritual", ethical_weight=0.6)
+register_ritual_templates()
 
 # Scroll System Documentation
 

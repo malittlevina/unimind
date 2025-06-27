@@ -8,15 +8,18 @@ import os
 import sys
 
 from unimind.core import unimind
-from unimind.memory import hippocampus, short_term, memory_graph, text_to_sql
-from unimind.logic import symbolic_reasoner, text_to_logic, text_to_shell
-from unimind.emotion import amygdala, emotion_classifier
+from unimind.memory import hippocampus, short_term, memory_graph
+from unimind.logic import symbolic_reasoner
+from unimind.emotion import amygdala
 from unimind.ethics import pineal_gland
 from unimind.language import lam_engine, llm_engine, text_to_text
-from unimind.perception import brocas_area, wernickes_area, occipital_lobe, vision_model, voice_model
-from unimind.context import context_model
-from unimind.expression import text_to_3d, text_to_video
-from unimind.planning import action_planner, text_to_code
+from unimind.models import (
+    text_to_sql, text_to_logic, text_to_shell, emotion_classifier,
+    vision_model, voice_model, text_to_3d, text_to_video,
+    text_to_code, context_model
+)
+from unimind.perception import brocas_area, wernickes_area, occipital_lobe
+from unimind.planning import action_planner
 from unimind.interfaces import system_control
 from unimind.scrolls import scroll_engine
 from unimind.todo import tasks
