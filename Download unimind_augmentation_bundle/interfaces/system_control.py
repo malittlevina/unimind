@@ -1,0 +1,1 @@
+# Interface to control external applications, APIs, and OS functions
