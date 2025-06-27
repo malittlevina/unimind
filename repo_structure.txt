@@ -1,0 +1,93 @@
+.
+├── .DS_Store
+├── .snapshots
+│   ├── config.json
+│   ├── readme.md
+│   └── sponsors.md
+├── README.md
+├── repo_structure.txt
+└── unimind
+    ├── .DS_Store
+    ├── .snapshots
+    │   ├── config.json
+    │   ├── readme.md
+    │   └── sponsors.md
+    ├── actuators
+    │   └── device_actions.py
+    ├── context
+    │   └── context_model.py
+    ├── core
+    │   ├── .DS_Store
+    │   ├── loader.py
+    │   ├── symbolic_map.py
+    │   └── unimind.py
+    ├── cortex
+    │   ├── cerebellum.py
+    │   ├── motor_cortex.py
+    │   └── prefrontal_cortex.py
+    ├── daemon_web
+    │   ├── core_router.py
+    │   ├── persona_manifest.json
+    │   └── personas
+    │       ├── persona_01.py
+    │       ├── persona_02.py
+    │       ├── persona_03.py
+    │       ├── persona_04.py
+    │       ├── persona_05.py
+    │       ├── persona_06.py
+    │       ├── persona_07.py
+    │       ├── persona_08.py
+    │       └── persona_09.py
+    ├── emotion
+    │   ├── __init__.py
+    │   ├── .DS_Store
+    │   ├── amygdala.py
+    │   └── emotion_classifier.py
+    ├── ethics
+    │   └── pineal_gland.py
+    ├── expression
+    │   ├── __init__.py
+    │   ├── text_to_3d.py
+    │   └── text_to_video.py
+    ├── interfaces
+    │   └── system_control.py
+    ├── language
+    │   ├── __init__.py
+    │   ├── .DS_Store
+    │   ├── lam_engine.py
+    │   ├── llm_engine.py
+    │   └── text_to_text.py
+    ├── logic
+    │   ├── __init__.py
+    │   ├── .DS_Store
+    │   ├── symbolic_reasoner.py
+    │   ├── text_to_logic.py
+    │   └── text_to_shell.py
+    ├── memory
+    │   ├── __init__.py
+    │   ├── hippocampus.py
+    │   ├── memory_graph.py
+    │   ├── short_term.py
+    │   └── text_to_sql.py
+    ├── perception
+    │   ├── __init__.py
+    │   ├── brocas_area.py
+    │   ├── occipital_lobe.py
+    │   ├── temporal_lobe.py
+    │   ├── vision_model.py
+    │   ├── voice_model.py
+    │   └── wernickes_area.py
+    ├── planning
+    │   ├── __init__.py
+    │   ├── action_planner.py
+    │   └── text_to_code.py
+    ├── repo_structure.txt
+    ├── scrolls
+    │   └── scroll_engine.py
+    ├── soul
+    │   ├── foundation_manifest.json
+    │   └── tenets.py
+    └── todo
+        └── tasks.md
+
+22 directories, 69 files

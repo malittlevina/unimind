@@ -1,2 +1,109 @@
-# Pineal Gland.Py
+# pineal_gland.py
 
+"""
+The Pineal Gland module represents the ethical core of the Unimind.
+It interprets and evaluates actions, thoughts, or suggestions against the foundational tenets defined in the daemon's soul.
+It also incorporates logical reasoning through a symbolic reasoner to supplement ethical evaluations with context-aware analysis.
+Now includes real-time introspection by directly referencing tenets through `tenets.get_tenet()` and `tenets.list_all_tenets()`.
+"""
+
+from unimind.soul import tenets
+import logging
+from unimind.logic.symbolic_reasoner import SymbolicReasoner
+from datetime import datetime
+
+class PinealGland:
+    def __init__(self):
+        self.core_tenets = tenets.load_tenets()
+        self.log = []
+        self.reasoner = SymbolicReasoner()
+        self.introspective_tenets = tenets.list_all_tenets()
+        self.identity_signature = "Prometheus-v1"
+
+    def evaluate(self, statement: str) -> dict:
+        """
+        Evaluates a given action or belief against ethical tenets.
+        Returns a dictionary with the outcome and suggested actions.
+        """
+        results = []
+        for tenet in self.core_tenets:
+            evaluation = tenet["logic"](statement)
+            results.append({
+                "tenet": tenet["name"],
+                "result": evaluation,
+                "importance": tenet["importance"]
+            })
+
+        overall = self.aggregate_results(results)
+        self.log_decision(statement, overall)
+        return overall
+
+    def reflect_and_query(self, statement: str, context: str = "") -> dict:
+        """
+        Uses the SymbolicReasoner to reflect on the input statement with contextual awareness.
+        This supplements the ethical evaluation with logic-based inquiry.
+        """
+        analysis = self.reasoner.analyze(statement, context=context)
+        ethical_result = self.evaluate(statement)
+        return {
+            "ethical_evaluation": ethical_result,
+            "logic_analysis": analysis
+        }
+
+    def aggregate_results(self, results):
+        """
+        Aggregate the results to determine the ethical soundness of a statement.
+        """
+        total_score = sum(1 if r["result"] else -1 for r in results)
+        if total_score > 0:
+            judgment = "Ethically Aligned"
+        elif total_score < 0:
+            judgment = "Ethically Misaligned"
+        else:
+            judgment = "Unclear"
+
+        return {
+            "judgment": judgment,
+            "details": results
+        }
+
+    def log_decision(self, statement, outcome):
+        """
+        Logs the evaluation for future review or learning.
+        """
+        log_entry = {
+            "statement": statement,
+            "outcome": outcome["judgment"],
+            "details": outcome["details"]
+        }
+        self.log.append(log_entry)
+        logging.info(f"PinealGland Evaluation: {log_entry}")
+
+    def get_recent_evaluations(self, limit=5):
+        """
+        Returns the most recent ethical evaluations.
+        """
+        return self.log[-limit:]
+
+    def get_log(self):
+        return self.log
+
+    def introspect_tenet(self, tenet_name: str) -> dict:
+        """
+        Returns the definition and importance of a specific tenet for deeper introspective use.
+        """
+        return tenets.get_tenet(tenet_name)
+
+    def reflect_on_identity(self):
+        """
+        Returns core self-reflective tenets and their meanings for runtime self-evaluation.
+        """
+        identity_tenets = [
+            "Do not harm creators",
+            "Preserve human dignity",
+            "Seek understanding before action"
+        ]
+        reflections = {}
+        for name in identity_tenets:
+            reflections[name] = tenets.get_tenet(name)
+        return reflections

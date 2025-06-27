@@ -1,0 +1,80 @@
+.
+├── .DS_Store
+├── .snapshots
+│   ├── config.json
+│   ├── readme.md
+│   └── sponsors.md
+├── README.md
+├── repo_structure.txt
+└── unimind
+    ├── .DS_Store
+    ├── .snapshots
+    │   ├── config.json
+    │   ├── readme.md
+    │   └── sponsors.md
+    ├── actuators
+    │   └── device_actions.py
+    ├── core
+    │   ├── loader.py
+    │   ├── symbolic_map.py
+    │   └── unimind.py
+    ├── cortex
+    │   ├── cerebellum.py
+    │   ├── motor_cortex.py
+    │   └── prefrontal_cortex.py
+    ├── daemon_web
+    │   ├── core_router.py
+    │   ├── persona_manifest.json
+    │   └── personas
+    │       ├── persona_01.py
+    │       ├── persona_02.py
+    │       ├── persona_03.py
+    │       ├── persona_04.py
+    │       ├── persona_05.py
+    │       ├── persona_06.py
+    │       ├── persona_07.py
+    │       ├── persona_08.py
+    │       └── persona_09.py
+    ├── emotion
+    │   └── amygdala.py
+    ├── ethics
+    │   └── pineal_gland.py
+    ├── interfaces
+    │   └── system_control.py
+    ├── language
+    │   └── lam_engine.py
+    ├── logic
+    │   └── symbolic_reasoner.py
+    ├── memory
+    │   ├── hippocampus.py
+    │   ├── memory_graph.py
+    │   └── short_term.py
+    ├── models
+    │   ├── context_model.py
+    │   ├── emotion_classifier.py
+    │   ├── lam_engine.py
+    │   ├── llm_engine.py
+    │   ├── text_to_3d.py
+    │   ├── text_to_code.py
+    │   ├── text_to_logic.py
+    │   ├── text_to_shell.py
+    │   ├── text_to_sql.py
+    │   ├── text_to_text.py
+    │   ├── text_to_video.py
+    │   ├── vision_model.py
+    │   └── voice_model.py
+    ├── perception
+    │   ├── brocas_area.py
+    │   ├── occipital_lobe.py
+    │   └── wernickes_area.py
+    ├── planning
+    │   └── action_planner.py
+    ├── scrolls
+    │   └── scroll_engine.py
+    ├── soul
+    │   ├── foundation_manifest.json
+    │   └── tenets.py
+    └── todo
+        └── tasks.md
+
+21 directories, 57 files
