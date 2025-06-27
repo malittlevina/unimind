@@ -14,10 +14,7 @@
     │   └── sponsors.md
     ├── actuators
     │   └── device_actions.py
-    ├── context
-    │   └── context_model.py
     ├── core
-    │   ├── .DS_Store
     │   ├── loader.py
     │   ├── symbolic_map.py
     │   └── unimind.py
@@ -39,49 +36,39 @@
     │       ├── persona_08.py
     │       └── persona_09.py
     ├── emotion
-    │   ├── __init__.py
-    │   ├── .DS_Store
-    │   ├── amygdala.py
-    │   └── emotion_classifier.py
+    │   └── amygdala.py
     ├── ethics
     │   └── pineal_gland.py
-    ├── expression
-    │   ├── __init__.py
-    │   ├── text_to_3d.py
-    │   └── text_to_video.py
     ├── interfaces
     │   └── system_control.py
     ├── language
-    │   ├── __init__.py
-    │   ├── .DS_Store
-    │   ├── lam_engine.py
-    │   ├── llm_engine.py
-    │   └── text_to_text.py
+    │   └── lam_engine.py
     ├── logic
-    │   ├── __init__.py
-    │   ├── .DS_Store
-    │   ├── symbolic_reasoner.py
-    │   ├── text_to_logic.py
-    │   └── text_to_shell.py
+    │   └── symbolic_reasoner.py
     ├── memory
-    │   ├── __init__.py
     │   ├── hippocampus.py
     │   ├── memory_graph.py
-    │   ├── short_term.py
-    │   └── text_to_sql.py
+    │   └── short_term.py
+    ├── models
+    │   ├── context_model.py
+    │   ├── emotion_classifier.py
+    │   ├── lam_engine.py
+    │   ├── llm_engine.py
+    │   ├── text_to_3d.py
+    │   ├── text_to_code.py
+    │   ├── text_to_logic.py
+    │   ├── text_to_shell.py
+    │   ├── text_to_sql.py
+    │   ├── text_to_text.py
+    │   ├── text_to_video.py
+    │   ├── vision_model.py
+    │   └── voice_model.py
     ├── perception
-    │   ├── __init__.py
     │   ├── brocas_area.py
     │   ├── occipital_lobe.py
-    │   ├── temporal_lobe.py
-    │   ├── vision_model.py
-    │   ├── voice_model.py
     │   └── wernickes_area.py
     ├── planning
-    │   ├── __init__.py
-    │   ├── action_planner.py
-    │   └── text_to_code.py
-    ├── repo_structure.txt
+    │   └── action_planner.py
     ├── scrolls
     │   └── scroll_engine.py
     ├── soul
@@ -90,4 +77,4 @@
     └── todo
         └── tasks.md
 
-22 directories, 69 files
+21 directories, 57 files
