@@ -2,7 +2,10 @@
 main.py – Entry point for the Unimind daemon system
 """
 
+import sys
 import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 import json
 import time
 import threading
@@ -21,15 +24,15 @@ def load_config():
         print("⚠️ config.json not found. Using default config.")
     return {}
 
-from core.unimind import Unimind
-from core.loader import load_brain_modules
-from interfaces.system_control import SystemControl
-from logic.symbolic_reasoner import SymbolicReasoner
-from ethics.pineal_gland import EthicalGovernor
-from soul.tenets import TENETS
-from daemon_web.core_router import start_persona_services
-from memory.memory_graph import MemoryGraph
-from scrolls.scroll_engine import ScrollEngine
+from unimind.core.unimind import Unimind
+from unimind.core.loader import load_brain_modules
+from unimind.interfaces.system_control import SystemControl
+from unimind.logic.symbolic_reasoner import SymbolicReasoner
+from unimind.ethics.pineal_gland import EthicalGovernor
+from unimind.soul.tenets import TENETS
+from unimind.daemon_web.core_router import start_persona_services
+from unimind.memory.memory_graph import MemoryGraph
+from unimind.scrolls.scroll_engine import ScrollEngine
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--invoke", type=str, help="Scroll to invoke on launch")
@@ -46,7 +49,7 @@ def main():
 
     # Announce identity
     try:
-        from soul.foundation_manifest import DAEMON_IDENTITY
+        from unimind.soul.foundation_manifest import DAEMON_IDENTITY
         print(f"✨ Activating Daemon: {DAEMON_IDENTITY['name']} (v{DAEMON_IDENTITY['version']})")
     except Exception:
         print("⚠️ No identity manifest found.")

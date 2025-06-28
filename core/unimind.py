@@ -2,12 +2,12 @@
 
 import logging
 
-from logic.symbolic_reasoner import SymbolicReasoner
+from unimind.logic.symbolic_reasoner import SymbolicReasoner
 from ethics.pineal_gland import EthicalCore
-from memory.memory_graph import MemoryGraph
-from cortex.prefrontal_cortex import PrefrontalCortex
-from planning.action_planner import ActionPlanner
-from soul.tenets import get_active_tenets
+from unimind.memory.memory_graph import MemoryGraph
+from unimind.cortex.prefrontal_cortex import PrefrontalCortex
+from unimind.planning.action_planner import ActionPlanner
+from unimind.soul.tenets import get_active_tenets
 
 class Unimind:
     def __init__(self):

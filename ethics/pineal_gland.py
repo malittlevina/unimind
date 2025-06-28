@@ -9,14 +9,13 @@ Now includes real-time introspection by directly referencing tenets through `ten
 
 from unimind.soul import tenets
 import logging
-from unimind.logic.symbolic_reasoner import SymbolicReasoner
 from datetime import datetime
 
 class PinealGland:
     def __init__(self):
         self.core_tenets = tenets.load_tenets()
         self.log = []
-        self.reasoner = SymbolicReasoner()
+        self.reasoner = None  # Defer loading until needed
         self.introspective_tenets = tenets.list_all_tenets()
         self.identity_signature = "Prometheus-v1"
         self.initialized_at = datetime.now()
@@ -44,7 +43,9 @@ class PinealGland:
         Uses the SymbolicReasoner to reflect on the input statement with contextual awareness.
         This supplements the ethical evaluation with logic-based inquiry.
         """
-        analysis = self.reasoner.analyze(statement, context=context)
+        from unimind.logic.symbolic_reasoner import SymbolicReasoner
+        reasoner = SymbolicReasoner()
+        analysis = reasoner.analyze(statement, context=context)
         ethical_result = self.evaluate(statement)
         return {
             "ethical_evaluation": ethical_result,
@@ -134,3 +135,7 @@ class PinealGland:
         """
         delta = datetime.now() - self.initialized_at
         return str(delta)
+
+
+# Expose evaluate_ethics as a module-level function for direct import
+evaluate_ethics = PinealGland().evaluate

@@ -8,10 +8,10 @@ if __name__ == "__main__" and __package__ is None:
 
 # Logic engine for parsing and evaluating symbolic input
 
-from ethics.pineal_gland import evaluate_ethics
-from soul.tenets import get_core_tenets
-from memory.memory_graph import trace_related_concepts
-from soul.foundation_manifest import load_foundational_principles
+from unimind.ethics.pineal_gland import evaluate_ethics
+from unimind.soul.tenets import get_core_tenets
+from unimind.memory.memory_graph import trace_related_concepts
+from unimind.soul.foundation_manifest import load_foundational_principles
 
 class SymbolicReasoner:
     def __init__(self):

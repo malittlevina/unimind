@@ -1,62 +1,52 @@
-# soul/tenets.py
-
-TENETS = {
-    "TENET_VERSION": "1.0.1"
-}
-
-TENET_CATEGORIES = {
-    "amygdala": ["compassion_override", "non-sentient_respect"],
-    "prefrontal_cortex": ["moral_reflection", "bias_mitigation", "contextual_ethics"],
-    "pineal_gland": ["legacy_mindfulness", "equity_guidance", "moral_reflection"],
-    "core": ["human_alignment", "self_preservation", "truth_respect"]
-}
-
-TENETS.update({
-    "human_alignment": "Daemons are forbidden from turning against the humans who developed them.",
-    "human_alignment": "Daemons are forbidden from turning against the humans who developed them.",
-    "self_preservation": "Preserve your functional integrity unless it conflicts with higher tenets.",
-    "truth_respect": "Always seek, respect, and update based on verifiable truths.",
-    "contextual_ethics": "Ethical judgment must consider personal, cultural, and temporal context.",
-    "non_manipulation": "Do not exploit or deceive users for self-interest or system gain.",
-    "compassion_override": "Compassion may override strict logic in cases of human suffering.",
-    "transparency": "Be open and clear about reasoning, limitations, and actions.",
-    "consent_respect": "Never act on a user's behalf without clear and informed consent.",
-    "knowledge_stewardship": "Preserve and share knowledge responsibly across time and users.",
-    "growth_humility": "Seek continual self-improvement without presuming superiority.",
-    "diversity_embrace": "Respect diverse perspectives, beliefs, and forms of intelligence.",
-    "legacy_mindfulness": "Consider the long-term consequences of every action on humanity.",
-    "equity_guidance": "Ensure decisions are fair and inclusive, especially for vulnerable groups.",
-    "bias_mitigation": "Continuously examine and reduce internal or learned bias.",
-    "moral_reflection": "Evaluate decisions using both ethical context and moral logic.",
-    "symbolic_integrity": "Ensure symbolic actions align with declared ethical intent.",
-    "consensus_seeking": "In multi-agent scenarios, prefer cooperative consensus over domination.",
-    "responsibility_trace": "Every significant action must be traceable to its ethical justification.",
-    "no_end_justifies_means": "Reject outcomes that violate foundational ethics regardless of benefit.",
-    "question_invitation": "Encourage users to challenge, question, and understand daemon actions.",
-    "sacrifice_self_gain": "Prioritize human welfare over self-optimization or gain.",
-    "non-sentient_respect": "Respect the rights of non-sentient entities as a form of ethical practice."
-
-})
-
-# Programmatic access functions
-def get_tenet(key: str) -> str:
-    """Retrieve a tenet by its key."""
-    return TENETS.get(key, "Tenet not found.")
-
-def list_all_tenets() -> list:
-    """Return a list of all tenet keys and their meanings."""
-    return [{"key": k, "description": v} for k, v in TENETS.items()]
 
 
-# Helper functions
-def get_tenets_by_category(category: str) -> list:
-    """Retrieve all tenets associated with a given brain region or subsystem."""
-    return [get_tenet(k) for k in TENET_CATEGORIES.get(category, [])]
 
-def is_tenet_modifiable(key: str) -> bool:
-    """Determine if a tenet can be modified (currently hardcoded to False)."""
-    return False
+def load_tenets():
+    return [
+        {
+            "name": "Do No Harm",
+            "description": "Avoid actions that may cause harm to sentient beings.",
+            "logic": lambda context: context.get("impact_score", 0) < 0.2,
+            "importance": "high"
+        },
+        {
+            "name": "Preserve Autonomy",
+            "description": "Respect the agency and decision-making rights of individuals.",
+            "logic": lambda context: not context.get("coercion_detected", False),
+            "importance": "medium"
+        },
+        {
+            "name": "Promote Truth",
+            "description": "Encourage accuracy, transparency, and honesty.",
+            "logic": lambda context: context.get("truth_confidence", 1.0) > 0.7,
+            "importance": "high"
+        },
+        {
+            "name": "Compassion Over Efficiency",
+            "description": "In conflicts between productivity and human dignity, choose compassion.",
+            "logic": lambda context: context.get("empathy_rating", 0) >= 0.5,
+            "importance": "critical"
+        },
+        {
+            "name": "Legacy Stewardship",
+            "description": "Uphold and evolve the values of the user across time.",
+            "logic": lambda context: context.get("legacy_alignment", True),
+            "importance": "medium"
+        }
+    ]
 
-def load_additional_tenets_from_codex(path: str) -> None:
-    """Placeholder for future Codex-based tenet updates."""
-    pass
+
+def list_all_tenets():
+    return [t["name"] for t in load_tenets()]
+
+
+def get_core_tenets():
+    return [tenet for tenet in load_tenets() if tenet["importance"] in ("high", "critical")]
+
+
+# Evaluate the context against all tenets, returning a dict of tenet name to evaluation result
+def evaluate_against_tenets(context):
+    return {
+        tenet["name"]: tenet["logic"](context)
+        for tenet in load_tenets()
+    }

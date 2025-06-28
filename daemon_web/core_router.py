@@ -1,7 +1,7 @@
 # core_router.py
 
-from .persona_manifest import load_persona_manifest
-from .personas import (
+from unimind.persona_manifest import load_persona_manifest
+from unimind.personas import (
     persona_01, persona_02, persona_03, persona_04,
     persona_05, persona_06, persona_07, persona_08,
     persona_09
