@@ -24,6 +24,27 @@
     "memory_link": "unimind/memory/memory_graph.py",
     "soul_logic_module": "unimind/soul/tenets.py",
     "personality_manifest": "unimind/daemon_web/persona_manifest.json",
-    "main_runtime_entry": "unimind/main.py"
+    "main_runtime_entry": "unimind/main.py",
+    "subsystems": {
+      "emotion_engine_enabled": true,
+      "ethics_core_enabled": true,
+      "memory_graph_enabled": true,
+      "personality_drift_enabled": true,
+      "scroll_invocation_enabled": true
+    },
+    "failsafe_procedure": {
+      "on_crash_restart": true,
+      "error_logging_path": "unimind/logs/errors.log",
+      "notify_user_on_failure": true
+    },
+    "symbolic_language_reference": "unimind/docs/symbolic_language_guide.md",
+    "self_growth_directives": {
+      "optimize_self_daily": true,
+      "log_evolution_events": true,
+      "track_personality_drift": true,
+      "version_tracking_enabled": true,
+      "auto_increment_version_on_commit": true
+    },
+    "unimind_topology_map": "unimind/docs/unimind_structure_map.json"
   }
 }
