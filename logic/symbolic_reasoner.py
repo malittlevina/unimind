@@ -1,14 +1,21 @@
+# Allow absolute imports when running this script directly
+import sys
+import os
+
+if __name__ == "__main__" and __package__ is None:
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+    __package__ = "logic"
+
 # Logic engine for parsing and evaluating symbolic input
 
-from unimind.ethics.pineal_gland import evaluate_ethics
-from unimind.soul.tenets import get_core_tenets
-from unimind.memory.memory_graph import trace_related_concepts
-from unimind.soul.foundation_manifest import load_foundational_principles
+from ethics.pineal_gland import evaluate_ethics
+from soul.tenets import get_core_tenets
+from memory.memory_graph import trace_related_concepts
+from soul.foundation_manifest import load_foundational_principles
 
 class SymbolicReasoner:
     def __init__(self):
         self.tenets = get_core_tenets()
-        from unimind.soul.foundation_manifest import load_foundational_principles
         self.foundation = load_foundational_principles()
 
     def load_dynamic_context(self):
