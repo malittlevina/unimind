@@ -1,0 +1,38 @@
+
+
+{
+  "triggers": [
+    {
+      "name": "daily_optimize_self",
+      "type": "time_based",
+      "schedule": "0 8 * * *",
+      "description": "Run optimize_self ritual every morning at 8AM",
+      "scroll": "optimize_self"
+    },
+    {
+      "name": "emotion_overload_detected",
+      "type": "emotional_state",
+      "condition": {
+        "threshold": 0.85,
+        "detector": "amygdala"
+      },
+      "description": "Trigger emotional healing scroll when emotional overload detected",
+      "scroll": "emotional_healing"
+    },
+    {
+      "name": "user_speaks_phrase",
+      "type": "speech_trigger",
+      "phrase": "begin analysis",
+      "description": "Invoke analysis scroll when specific phrase is spoken",
+      "scroll": "begin_analysis"
+    },
+    {
+      "name": "new_file_detected",
+      "type": "system_event",
+      "event": "file_created",
+      "path": "/Users/mikematovina/Documents/Logs/",
+      "description": "Trigger log ingestion ritual when new file appears",
+      "scroll": "ingest_log_file"
+    }
+  ]
+}

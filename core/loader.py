@@ -26,61 +26,67 @@ from unimind.todo import tasks
 from unimind.daemon_web import core_router
 from unimind.soul import foundation_manifest, tenets
 
+
 # Aliased for backward compatibility if needed
 lam_model = lam_engine
+
+# Unified model registry import
+from unimind.models import model_registry
 
 def load_all_subsystems():
     print("🔁 [LOADER] Initializing Unimind subsystems...")
 
-    # Core systems
-    unimind.boot_sequence()
+    # 🧠 Unimind Core Initialization
+    unimind.boot_sequence()  # Core system boot sequence
 
-    # Memory
-    hippocampus.initialize()
-    short_term.warm_up()
-    memory_graph.build_graph()
+    # 🧠 Memory Systems (Hippocampus, STM, Memory Graph)
+    hippocampus.initialize()  # Hippocampus initialization
+    short_term.warm_up()  # Short-term memory warm-up
+    memory_graph.build_graph()  # Memory graph construction
 
-    # Logic
-    symbolic_reasoner.activate()
+    # 🔍 Symbolic Logic Engine
+    symbolic_reasoner.activate()  # Activate symbolic reasoner
 
-    # Ethics / Tenets
-    pineal_gland.load_tenets(tenets.TENETS)
+    # ⚖️ Ethical Engine (Pineal Gland)
+    pineal_gland.load_tenets(tenets.TENETS)  # Load ethical tenets
 
-    # Emotion
-    amygdala.initialize_state()
+    # 💓 Emotion Engine (Amygdala)
+    amygdala.initialize_state()  # Initialize emotional state
 
-    # Perception
-    brocas_area.load_language_models()
-    wernickes_area.load_comprehension_engines()
-    occipital_lobe.load_vision_models()
+    # 👁️ Perception Systems (Broca, Wernicke, Occipital)
+    brocas_area.load_language_models()  # Load Broca's area language models
+    wernickes_area.load_comprehension_engines()  # Load Wernicke's area comprehension engines
+    occipital_lobe.load_vision_models()  # Load occipital lobe vision models
 
-    # Language and Models
-    lam_engine.boot()
-    llm_engine.load()
-    lam_model.load()
-    text_to_logic.prepare()
-    text_to_text.prepare()
-    text_to_3d.prepare()
-    text_to_video.prepare()
-    text_to_shell.prepare()
-    text_to_sql.prepare()
-    emotion_classifier.load_model()
-    vision_model.load_model()
-    voice_model.load_model()
-    context_model.initialize_context()
+    # 🗣️ Language and Symbolic Translation Engines
+    lam_engine.boot()  # Boot language abstraction model engine
+    llm_engine.load()  # Load large language model engine
+    lam_model.load()  # Load language abstraction model (alias)
+    text_to_logic.prepare()  # Prepare text to logic conversion
+    text_to_text.prepare()  # Prepare text to text transformation
+    text_to_3d.prepare()  # Prepare text to 3D model generation
+    text_to_video.prepare()  # Prepare text to video generation
+    text_to_shell.prepare()  # Prepare text to shell command conversion
+    text_to_sql.prepare()  # Prepare text to SQL conversion
+    emotion_classifier.load_model()  # Load emotion classifier model
+    vision_model.load_model()  # Load vision model
+    voice_model.load_model()  # Load voice model
+    context_model.initialize_context()  # Initialize context model
+    model_registry.register_all_models()  # Register all ML models to unified registry
 
-    # Planning and Interface
-    action_planner.load_goals()
-    system_control.bind_to_system()
+    # 🧭 Planning + Interface Hooks
+    action_planner.load_goals()  # Load action planning goals
+    system_control.bind_to_system()  # Bind system control interface
 
-    # Scrolls and Daemon Web
-    scroll_engine.index_scrolls()
-    core_router.register_routes()
+    # 📜 Scroll Engine and Daemon Web UI
+    scroll_engine.index_scrolls()  # Index scrolls for retrieval
+    core_router.register_routes()  # Register daemon web UI routes
 
-    # Soul and Tasks
-    foundation_manifest.validate()
-    tasks.load()
+    # 🌱 Soul Layer and Task Engine
+    foundation_manifest.validate()  # Validate foundation manifest
+    tasks.load()  # Load task engine
 
+    print(f"📦 [LOADER] Registered Models: {model_registry.summary()}")
     print("✅ [LOADER] All subsystems initialized.")
 
 if __name__ == "__main__":

@@ -1,5 +1,7 @@
 # unimind.py
 
+import logging
+
 from logic.symbolic_reasoner import SymbolicReasoner
 from ethics.pineal_gland import EthicalCore
 from memory.memory_graph import MemoryGraph
@@ -9,6 +11,9 @@ from soul.tenets import get_active_tenets
 
 class Unimind:
     def __init__(self):
+        self.logger = logging.getLogger("Unimind")
+        logging.basicConfig(level=logging.INFO)
+        self.logger.info("Initializing Unimind subsystems...")
         self.reasoner = SymbolicReasoner()
         self.ethics = EthicalCore()
         self.memory = MemoryGraph()
@@ -16,11 +21,13 @@ class Unimind:
         self.pfc = PrefrontalCortex()
         self.tenets = get_active_tenets()
         self.plugins = {}
+        self.logger.info("Unimind initialized successfully.")
 
     def process_thought(self, input_signal):
         context = self.memory.retrieve_relevant(input_signal)
         ethical_result = self.ethics.evaluate_with_tenets(input_signal, self.tenets)
         if not ethical_result['approved']:
+            self.logger.warning(f"Ethical conflict: {ethical_result['violations']}")
             return {
                 "output": "Action blocked due to ethical conflict.",
                 "conflict": ethical_result['violations']
@@ -33,14 +40,17 @@ class Unimind:
             return scroll_output
         plan = self.planner.create_plan(reasoning)
         self.memory.store_thought(input_signal, plan)
+        self.logger.info("Thought processed and plan created.")
         return plan
 
     def update_state(self, external_data):
+        self.logger.info(f"Updating state with data: {external_data}")
         insights = self.reasoner.analyze(external_data)
         self.memory.update(insights)
         self.pfc.adapt_behavior(insights)
 
     def reflect(self):
+        self.logger.info("Running reflection cycle.")
         recent_activity = self.memory.retrieve_recent()
         ethical_review = self.ethics.audit(recent_activity)
         adjustments = self.pfc.recalibrate(ethical_review)
@@ -48,8 +58,10 @@ class Unimind:
 
     def register_plugin(self, name, module):
         self.plugins[name] = module
+        self.logger.info(f"Plugin registered: {name}")
 
     def self_diagnose(self):
+        self.logger.info("Running self-diagnosis...")
         system_report = {
             "memory_load": self.memory.status() if hasattr(self.memory, "status") else "unknown",
             "ethical_integrity": self.ethics.health_check() if hasattr(self.ethics, "health_check") else "unknown",
@@ -60,5 +72,7 @@ class Unimind:
     def log_identity_drift(self):
         if hasattr(self.pfc, "detect_shift"):
             changes = self.pfc.detect_shift(self.tenets)
+            if changes:
+                self.logger.info(f"Identity drift detected: {changes}")
             if hasattr(self.memory, "store_identity_drift"):
                 self.memory.store_identity_drift(changes)

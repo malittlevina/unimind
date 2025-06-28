@@ -10,6 +10,8 @@ class WernickesArea:
         self.language_models = []
         self.known_symbols = {}
         self.semantic_memory = {}
+        self.recent_phrases = []
+        self.context_window = 5  # Number of recent inputs to retain
 
     def load_symbol_lexicon(self, symbol_dict):
         """
@@ -20,8 +22,10 @@ class WernickesArea:
     def comprehend_input(self, input_text):
         """
         Comprehend and decode input to extract meaning and intent.
-        This can include natural language or symbolic glyphs.
+        This includes natural language or symbolic glyphs, emotion tone, and conversational context.
         """
+        self.update_context(input_text)
+
         meaning = {
             "intent": None,
             "keywords": [],
@@ -65,3 +69,18 @@ class WernickesArea:
         if any(word in text.lower() for word in ["love", "beautiful", "wonder"]):
             return "positive"
         return "neutral"
+
+    def update_context(self, input_text):
+        """
+        Maintain a sliding window of recent input phrases for improved comprehension continuity.
+        """
+        self.recent_phrases.append(input_text)
+        if len(self.recent_phrases) > self.context_window:
+            self.recent_phrases.pop(0)
+
+# Placeholder for integrating advanced language model comprehension
+def integrate_llm_response(self, structured_prompt):
+    """
+    Placeholder for calling an LLM (e.g., GPT, Claude) to enhance intent decoding.
+    """
+    return {"llm_output": None, "confidence": 0.0}

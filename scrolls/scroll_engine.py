@@ -13,7 +13,14 @@ from unimind.memory.memory_graph import log_memory_event
 from unimind.ethics.pineal_gland import evaluate_ethics
 from unimind.logic.symbolic_reasoner import evaluate_scroll_logic
 
+import re
+
+def validate_scroll_name(name):
+    if not re.match("^[a-z0-9_]+$", name):
+        raise ValueError(f"Scroll name '{name}' contains invalid characters. Use only lowercase letters, numbers, and underscores.")
+
 def define_scroll(name, function, category=None, ethical_weight=None):
+    validate_scroll_name(name)
     registered_scroll_definitions[name] = {
         "function": function,
         "category": category,
@@ -51,6 +58,8 @@ ritual_templates = {
     "optimize_self": ["introspect_core", "clean_memory", "refactor_modules"],
     "calm_sequence": ["breathe_focus", "clear_emotion", "ground_thought"]
 }
+
+ritual_templates["introspective_dive"] = ["self_assess", "introspect_core"]
 
 def get_template(name):
     return ritual_templates.get(name, [])
@@ -98,6 +107,11 @@ def compose_scroll_from_goal(goal):
     define_scroll(name, lambda ctx: [cast_scroll(s, ctx) for s in generated_scroll], category="generated", ethical_weight=0.4)
     return name
 
+def classify_goal_symbolically(goal):
+    # TODO: Implement symbolic NLP goal classification
+    print(f"Classifying goal: {goal}")
+    return {"intent": "optimize", "mood": "analytical"}
+
 # Scroll Errors
 # Custom error classes for scroll casting.
 
@@ -117,6 +131,10 @@ define_scroll("clear_emotion", clear_emotion, category="emotion", ethical_weight
 def introspect_core(context=None):
     print("Performing core introspection...")
 define_scroll("introspect_core", introspect_core, category="self", ethical_weight=0.5)
+
+def self_assess(context=None):
+    print("Running self-assessment check...")
+define_scroll("self_assess", self_assess, category="self", ethical_weight=0.5)
 
 def register_ritual_templates():
     for ritual_name, steps in ritual_templates.items():

@@ -3,10 +3,13 @@
 from unimind.ethics.pineal_gland import evaluate_ethics
 from unimind.soul.tenets import get_core_tenets
 from unimind.memory.memory_graph import trace_related_concepts
+from unimind.soul.foundation_manifest import load_foundational_principles
 
 class SymbolicReasoner:
     def __init__(self):
         self.tenets = get_core_tenets()
+        from unimind.soul.foundation_manifest import load_foundational_principles
+        self.foundation = load_foundational_principles()
 
     def load_dynamic_context(self):
         """
@@ -89,6 +92,7 @@ class SymbolicReasoner:
             "context": dynamic_context,
             "logical_score": self.score_logical_soundness(parsed_input),
             "reasoning_trace": self.trace_reasoning_path(parsed_input),
+            "foundational_reflection": self.foundation.get("reflection", "No foundational guidance."),
         }
 
     def reason(self, symbolic_input):
@@ -110,6 +114,7 @@ class SymbolicReasoner:
             "related_concepts": related_concepts,
             "logical_score": ethical_evaluation["logical_score"],
             "reasoning_trace": ethical_evaluation["reasoning_trace"],
+            "foundational_reflection": ethical_evaluation["foundational_reflection"],
         }
         if self.is_ambiguous(parsed):
             response["clarification_needed"] = True
@@ -118,6 +123,8 @@ class SymbolicReasoner:
         else:
             response["clarification_needed"] = False
         return response
+
+# Future: Add integration with Broca's Area and Wernicke's Area for linguistic nuance
 
 # Example usage:
 if __name__ == "__main__":

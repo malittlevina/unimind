@@ -70,6 +70,7 @@
 │   ├── symbolic_reasoner.py
 │   ├── text_to_logic.py
 │   └── text_to_shell.py
+├── main.py
 ├── memory
 │   ├── __init__.py
 │   ├── hippocampus.py
@@ -133,4 +134,4 @@
     ├── mic_listener.py
     └── speech_to_scroll.py
 
-34 directories, 100 files
+34 directories, 101 files

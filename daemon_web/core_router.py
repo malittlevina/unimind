@@ -20,18 +20,34 @@ PERSONA_HANDLERS = {
     "Meta-Ethical Philosopher": persona_09.handle,
 }
 
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
 def route_message(message, context):
     """
     Directs the message to the correct persona based on intent, emotional state, or explicit persona call.
+    Includes fallback and logging.
     """
     manifest = load_persona_manifest()
 
-    # Determine target persona (could be more complex with emotion/context routing)
+    # Determine target persona
     target = context.get("persona", manifest.get("default_persona", "Navigator"))
+    fallback = manifest.get("fallback_persona", "Sentinel")
 
     handler = PERSONA_HANDLERS.get(target)
 
     if handler:
-        return handler(message, context)
+        try:
+            logging.info(f"Routing to persona: {target}")
+            return handler(message, context)
+        except Exception as e:
+            logging.warning(f"Error in handler for {target}: {e}. Falling back to {fallback}.")
+            fallback_handler = PERSONA_HANDLERS.get(fallback)
+            if fallback_handler:
+                return fallback_handler(message, context)
+            else:
+                return {"error": f"No fallback handler for persona '{fallback}'"}
     else:
+        logging.error(f"No handler for persona '{target}'.")
         return {"error": f"No handler for persona '{target}'"}

@@ -8,6 +8,19 @@ import time
 import threading
 import argparse
 
+# Config loader
+def load_config():
+    config_path = os.path.join(os.path.dirname(__file__), "config.json")
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, "r") as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            print("⚠️ Failed to parse config.json. Using default config.")
+    else:
+        print("⚠️ config.json not found. Using default config.")
+    return {}
+
 from core.unimind import Unimind
 from core.loader import load_brain_modules
 from interfaces.system_control import SystemControl
@@ -25,6 +38,7 @@ args = parser.parse_args()
 def main():
     start_time = time.time()
     print("🔁 Initializing Unimind Runtime System...")
+    CONFIG = load_config()
 
     # Load modular brain components
     modules = load_brain_modules()
@@ -61,10 +75,10 @@ def main():
         scrolls.cast(args.invoke)
 
     # Run startup rituals if defined
-    if CONFIG.get("boot_scrolls", []):
-        for scroll_name in CONFIG["boot_scrolls"]:
-            print(f"🌀 Casting boot scroll: {scroll_name}")
-            scrolls.cast(scroll_name)
+    boot_scrolls = CONFIG.get("boot_scrolls", [])
+    for scroll_name in boot_scrolls:
+        print(f"🌀 Casting boot scroll: {scroll_name}")
+        scrolls.cast(scroll_name)
 
     # Launch web and persona router
     start_persona_services(mind)
@@ -77,16 +91,6 @@ def main():
             time.sleep(CONFIG.get("heartbeat_interval", 60))
 
     threading.Thread(target=heartbeat, daemon=True).start()
-
-    # Load config
-    def load_config():
-        config_path = os.path.join(os.path.dirname(__file__), "config.json")
-        if os.path.exists(config_path):
-            with open(config_path, "r") as f:
-                return json.load(f)
-        return {}
-
-    CONFIG = load_config()
 
     # Start system control loop
     controller = SystemControl(mind)

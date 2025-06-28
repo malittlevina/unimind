@@ -1,4 +1,3 @@
-
 """
 Hippocampus - Long-term memory processing center for the Unimind architecture.
 Responsible for encoding, storing, and retrieving symbolic and contextual memory traces.
@@ -13,6 +12,7 @@ class Hippocampus:
     def __init__(self, memory_path: str = "unimind/memory/memory_graph.json"):
         self.memory_path = memory_path
         self.memory_graph = self.load_memory_graph()
+        self.initialized_at = datetime.utcnow()
 
     def load_memory_graph(self) -> Dict[str, Any]:
         if os.path.exists(self.memory_path):
@@ -34,6 +34,16 @@ class Hippocampus:
         }
         self.save_memory_graph()
         return memory_id
+
+    def get_memory_stats(self) -> Dict[str, Any]:
+        return {
+            "total_memories": len(self.memory_graph),
+            "last_updated": max(
+                (mem["timestamp"] for mem in self.memory_graph.values()),
+                default="N/A"
+            ),
+            "initialized_at": self.initialized_at.isoformat()
+        }
 
     def retrieve_memory(self, query: Optional[str] = None) -> Dict[str, Any]:
         if not query:
@@ -63,4 +73,4 @@ class Hippocampus:
 if __name__ == "__main__":
     hippocampus = Hippocampus()
     print("Current memory summary:", hippocampus.summarize_memory())
-
+    print("Memory stats:", hippocampus.get_memory_stats())

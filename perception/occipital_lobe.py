@@ -12,13 +12,19 @@ class OccipitalLobe:
     def process_visual_input(self, raw_image):
         """
         Simulates the process of interpreting visual input.
-        Placeholder: Replace with actual computer vision pipeline (e.g., OpenCV, YOLO).
+        # Replace this with a real computer vision model, such as OpenCV for preprocessing,
+        # YOLO for object detection, and symbolic mapping pipelines for abstraction.
         """
         print("[OccipitalLobe] Processing visual input...")
         interpreted_data = {
             "objects": ["tree", "person", "sky"],
             "colors": ["green", "blue", "brown"],
             "symbols": ["growth", "human", "freedom"]
+        }
+        # Placeholder for future visual metadata capture
+        interpreted_data["metadata"] = {
+            "confidence_scores": {"tree": 0.92, "person": 0.87, "sky": 0.95},
+            "timestamp": "2025-06-27T12:00:00Z"
         }
         self.visual_stream.append(interpreted_data)
         self._update_symbolic_map(interpreted_data)
@@ -44,4 +50,14 @@ class OccipitalLobe:
         self.visual_stream.clear()
         self.symbolic_map.clear()
         print("[OccipitalLobe] Visual memory reset.")
+        print("[OccipitalLobe] Symbolic map cleared.")
+
+
+
+# Module testing
+if __name__ == "__main__":
+    ol = OccipitalLobe()
+    sample_view = ol.process_visual_input("mock_image_data")
+    print("Symbols:", ol.get_current_view_symbols())
+    ol.reset()
 

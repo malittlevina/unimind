@@ -1,3 +1,5 @@
+import logging
+logging.basicConfig(level=logging.INFO)
 from unimind.soul.tenets import evaluate_against_tenets
 from unimind.logic.symbolic_reasoner import SymbolicReasoner
 from unimind.ethics.pineal_gland import check_action_against_tenets
@@ -11,10 +13,19 @@ class Unimind:
     def reflect_on_intent(self, intent_description: str) -> bool:
         evaluation = self.tenet_filter(intent_description)
         if evaluation["violates_tenets"]:
-            print(f"[Unimind] Intent blocked: {evaluation['reason']}")
+            logging.warning(f"[Unimind] Intent blocked: {evaluation['reason']}")
             return False
-        print("[Unimind] Intent approved.")
+        logging.info("[Unimind] Intent approved.")
         return True
 
     def validate_action(self, action_summary: str) -> bool:
-        return self.ethical_checker(action_summary)
+        result = self.ethical_checker(action_summary)
+        logging.info(f"[Unimind] Action validation result: {result}")
+        return result
+
+    def summarize_memory_logic(self) -> str:
+        return (
+            f"Symbolic Reasoner: {self.reasoner.__class__.__name__}\n"
+            f"Tenet Filter Active: {self.tenet_filter.__name__}\n"
+            f"Ethical Checker Active: {self.ethical_checker.__name__}"
+        )

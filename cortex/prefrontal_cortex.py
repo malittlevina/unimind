@@ -8,6 +8,8 @@ Prefrontal Cortex – Responsible for higher-order executive functions:
 - Reflection hooks
 """
 
+from datetime import datetime
+
 from ethics.pineal_gland import evaluate_morality
 from logic.symbolic_reasoner import detect_contradictions
 from planning.action_planner import plan_evaluation
@@ -17,6 +19,7 @@ class PrefrontalCortex:
     def __init__(self):
         self.context_state = {}
         self.evaluation_log = []
+        self.last_reflection_time = None
 
     def reflect_on_input(self, input_data):
         """
@@ -33,6 +36,7 @@ class PrefrontalCortex:
             "decision_score": decision_score
         }
 
+        self.last_reflection_time = datetime.now()
         self.evaluation_log.append(reflection)
         return reflection
 
@@ -55,5 +59,24 @@ class PrefrontalCortex:
         """
         return plan_evaluation(plan, self.context_state)
 
+    def summarize_evaluation_log(self):
+        """
+        Returns a concise summary of past evaluations, focusing on decisions with high or low scores.
+        """
+        return [
+            {
+                "input": entry["input"],
+                "score": entry["decision_score"]
+            }
+            for entry in self.evaluation_log
+            if abs(entry["decision_score"]) >= 20
+        ]
+
     def get_reflection_history(self):
         return self.evaluation_log
+
+    def get_last_reflection_time(self):
+        """
+        Returns the timestamp of the last reflection event.
+        """
+        return self.last_reflection_time

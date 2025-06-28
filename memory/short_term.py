@@ -1,8 +1,11 @@
-
 # short_term.py
 
 import time
 from collections import deque
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class ShortTermMemory:
     def __init__(self, max_items=50, decay_time=300):
@@ -15,16 +18,19 @@ class ShortTermMemory:
         self.timestamps = deque()
         self.max_items = max_items
         self.decay_time = decay_time
+        logger.info(f"ShortTermMemory initialized with max_items={max_items}, decay_time={decay_time}")
 
     def store(self, item):
         """
         Store a new item in short-term memory.
         """
+        logger.info(f"Storing item: {item}")
         current_time = time.time()
         self.memory.append(item)
         self.timestamps.append(current_time)
 
         if len(self.memory) > self.max_items:
+            logger.info("Memory limit reached. Removing oldest item.")
             self.memory.popleft()
             self.timestamps.popleft()
 
@@ -46,6 +52,7 @@ class ShortTermMemory:
 
         self.memory = new_memory
         self.timestamps = new_timestamps
+        logger.info(f"Retrieved {len(filtered_memory)} valid items from short-term memory.")
         return filtered_memory
 
     def clear(self):
@@ -54,7 +61,15 @@ class ShortTermMemory:
         """
         self.memory.clear()
         self.timestamps.clear()
+        logger.info("Short-term memory cleared.")
 
     def __repr__(self):
         return f"<ShortTermMemory(size={len(self.memory)}, max_items={self.max_items})>"
 
+    def summary(self):
+        return {
+            "current_size": len(self.memory),
+            "max_items": self.max_items,
+            "decay_time": self.decay_time,
+            "oldest_item_age": time.time() - self.timestamps[0] if self.timestamps else None
+        }

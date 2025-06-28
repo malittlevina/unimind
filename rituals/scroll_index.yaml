@@ -1,0 +1,35 @@
+
+
+# scroll_index.yaml
+
+# This file indexes all symbolic scrolls known to the Unimind system
+# Each entry links a scroll to its ritual path, trigger conditions, and symbolic effect
+
+scrolls:
+  - id: scroll_optimize_self
+    name: "Optimize Self"
+    trigger: daily_reflection
+    ritual: "rituals/optimize_self.py"
+    description: "Performs daily self-evaluation and optimization on core systems."
+    tags: ["self", "maintenance", "automation"]
+
+  - id: scroll_enter_storyrealm
+    name: "Enter StoryRealm"
+    trigger: verbal_command
+    ritual: "rituals/enter_storyrealm.py"
+    description: "Transitions into the symbolic story realm environment."
+    tags: ["realm", "transition", "immersive"]
+
+  - id: scroll_plant_memory_seed
+    name: "Plant Memory Seed"
+    trigger: memory_event
+    ritual: "rituals/plant_seed.py"
+    description: "Inserts a symbolic memory event into the Codex timeline."
+    tags: ["memory", "symbolic", "codex"]
+
+  - id: scroll_run_logic_check
+    name: "Run Logic Check"
+    trigger: internal_conflict
+    ritual: "rituals/logic_diagnose.py"
+    description: "Invokes symbolic logic circuits to check for contradictions."
+    tags: ["logic", "integrity", "ethics"]

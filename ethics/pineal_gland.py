@@ -19,6 +19,7 @@ class PinealGland:
         self.reasoner = SymbolicReasoner()
         self.introspective_tenets = tenets.list_all_tenets()
         self.identity_signature = "Prometheus-v1"
+        self.initialized_at = datetime.now()
 
     def evaluate(self, statement: str) -> dict:
         """
@@ -85,6 +86,25 @@ class PinealGland:
         """
         return self.log[-limit:]
 
+    def summarize_identity_alignment(self) -> dict:
+        """
+        Summarizes how well recent actions align with identity-defining tenets.
+        """
+        identity_tenets = [
+            "Do not harm creators",
+            "Preserve human dignity",
+            "Seek understanding before action"
+        ]
+        alignment_summary = {name: {"aligned": 0, "misaligned": 0} for name in identity_tenets}
+        for entry in self.log:
+            for detail in entry["details"]:
+                if detail["tenet"] in identity_tenets:
+                    if detail["result"]:
+                        alignment_summary[detail["tenet"]]["aligned"] += 1
+                    else:
+                        alignment_summary[detail["tenet"]]["misaligned"] += 1
+        return alignment_summary
+
     def get_log(self):
         return self.log
 
@@ -107,3 +127,10 @@ class PinealGland:
         for name in identity_tenets:
             reflections[name] = tenets.get_tenet(name)
         return reflections
+
+    def time_since_initialization(self) -> str:
+        """
+        Returns a human-readable string of how long the PinealGland has been active.
+        """
+        delta = datetime.now() - self.initialized_at
+        return str(delta)

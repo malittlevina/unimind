@@ -1,4 +1,3 @@
-
 # symbolic_map.py
 
 """
@@ -8,7 +7,11 @@ It enables structured reasoning and self-reflection based on symbolic cues
 and abstract concept mappings.
 """
 
+import logging
 from typing import Dict, List, Union
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class SymbolicMap:
     def __init__(self):
@@ -27,27 +30,33 @@ class SymbolicMap:
             "cognition": ["planning", "memory", "language", "reasoning"],
             "sensation": ["vision", "speech", "gesture", "touch"],
         }
+        logger.info("SymbolicMap initialized with semantic domains: %s", list(self.semantic_domains.keys()))
 
     def register_symbol(self, symbol: str, node: str) -> None:
         """Link a symbolic concept to a functional brain node or model."""
+        logger.debug("Registering symbol '%s' to node '%s'", symbol, node)
         self.symbol_to_node[symbol] = node
 
     def get_node_for_symbol(self, symbol: str) -> Union[str, None]:
         """Retrieve the node or model associated with a symbolic cue."""
+        logger.debug("Retrieving node for symbol '%s': %s", symbol, self.symbol_to_node.get(symbol))
         return self.symbol_to_node.get(symbol)
 
     def link_symbols(self, source: str, target: str) -> None:
         """Create a symbolic relationship between two concepts."""
+        logger.debug("Linking symbol '%s' to '%s'", source, target)
         if source not in self.symbolic_memory_graph:
             self.symbolic_memory_graph[source] = []
         self.symbolic_memory_graph[source].append(target)
 
     def get_related_symbols(self, symbol: str) -> List[str]:
         """Return a list of conceptually linked symbols."""
+        logger.debug("Getting related symbols for '%s': %s", symbol, self.symbolic_memory_graph.get(symbol, []))
         return self.symbolic_memory_graph.get(symbol, [])
 
     def infer_domain(self, symbol: str) -> Union[str, None]:
         """Identify the semantic domain most relevant to a given symbol."""
+        logger.debug("Inferring domain for symbol '%s'", symbol)
         for domain, keywords in self.semantic_domains.items():
             if symbol in keywords:
                 return domain
@@ -60,4 +69,3 @@ class SymbolicMap:
             "symbolic_memory_graph": self.symbolic_memory_graph,
             "semantic_domains": self.semantic_domains,
         }
-
