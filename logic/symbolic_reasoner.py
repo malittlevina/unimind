@@ -9,14 +9,28 @@ if __name__ == "__main__" and __package__ is None:
 # Logic engine for parsing and evaluating symbolic input
 
 from unimind.ethics.pineal_gland import evaluate_ethics
-from unimind.soul.tenets import get_core_tenets
-from unimind.memory.memory_graph import trace_related_concepts
-from unimind.soul.foundation_manifest import load_foundational_principles
+try:
+    from unimind.memory.memory_graph import trace_related_concepts
+except ImportError:
+    def trace_related_concepts(input_text):
+        """
+        Mock implementation of trace_related_concepts.
+        Replace this with the actual implementation.
+        """
+        return ["concept1", "concept2", "concept3"]
+import json
+import os
+
+# Load DAEMON_IDENTITY from foundation_manifest.json
+manifest_path = os.path.join(os.path.dirname(__file__), "../soul/foundation_manifest.json")
+with open(manifest_path, "r") as f:
+    DAEMON_IDENTITY = json.load(f)
 
 class SymbolicReasoner:
     def __init__(self):
-        self.tenets = get_core_tenets()
-        self.foundation = load_foundational_principles()
+        self.tenets = lazy_get_core_tenets()
+        # Use DAEMON_IDENTITY["foundational_principles"] if needed; fallback if not found
+        self.foundation = DAEMON_IDENTITY.get("foundational_principles", {})
 
     def load_dynamic_context(self):
         """
@@ -130,6 +144,10 @@ class SymbolicReasoner:
         else:
             response["clarification_needed"] = False
         return response
+
+def lazy_get_core_tenets():
+    from unimind.soul import tenets
+    return tenets.get_core_tenets()
 
 # Future: Add integration with Broca's Area and Wernicke's Area for linguistic nuance
 

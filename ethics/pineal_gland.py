@@ -20,7 +20,7 @@ class PinealGland:
         self.identity_signature = "Prometheus-v1"
         self.initialized_at = datetime.now()
 
-    def evaluate(self, statement: str) -> dict:
+    def evaluate(self, statement: str) -> dict[str, object]:
         """
         Evaluates a given action or belief against ethical tenets.
         Returns a dictionary with the outcome and suggested actions.
@@ -137,5 +137,20 @@ class PinealGland:
         return str(delta)
 
 
+
 # Expose evaluate_ethics as a module-level function for direct import
 evaluate_ethics = PinealGland().evaluate
+
+# EthicalGovernor class for use in other modules (e.g., memory_graph.py)
+class EthicalGovernor:
+    """
+    A wrapper or alias for PinealGland to provide ethical validation via check_action_against_tenets.
+    """
+    def __init__(self, *args, **kwargs):
+        self.pineal = PinealGland()
+
+    def check_action_against_tenets(self, action: str) -> dict:
+        """
+        Checks an action or statement against the ethical tenets.
+        """
+        return self.pineal.evaluate(action)

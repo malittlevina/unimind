@@ -2,13 +2,13 @@ import logging
 logging.basicConfig(level=logging.INFO)
 from unimind.soul.tenets import evaluate_against_tenets
 from unimind.logic.symbolic_reasoner import SymbolicReasoner
-from unimind.ethics.pineal_gland import check_action_against_tenets
+from unimind.ethics.pineal_gland import EthicalGovernor
 
 class Unimind:
     def __init__(self):
         self.reasoner = SymbolicReasoner()
         self.tenet_filter = evaluate_against_tenets
-        self.ethical_checker = check_action_against_tenets
+        self.ethical_checker = lambda action: EthicalGovernor().evaluate_action(action)
 
     def reflect_on_intent(self, intent_description: str) -> bool:
         evaluation = self.tenet_filter(intent_description)
