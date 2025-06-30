@@ -206,10 +206,77 @@ class LAMEngine:
                 return scroll_name
         
         # Check for keyword matches (any word in the phrase matches)
-        for phrase, scroll_name in phrase_mappings.items():
-            phrase_words = phrase.split()
-            if any(word in words for word in phrase_words):
+        # But only for very specific command words to avoid false matches
+        command_keywords = {
+            "optimize": "optimize_self",
+            "calm": "calm_sequence", 
+            "relax": "calm_sequence",
+            "breathe": "calm_sequence",
+            "reflect": "introspect_core",
+            "introspect": "introspect_core",
+            "shield": "activate_shield",
+            "protect": "activate_shield",
+            "clean": "clean_memory",
+            "clear": "clean_memory",
+            "exit": "exit",
+            "quit": "exit",
+            "stop": "exit"
+        }
+        
+        # Only match if the input contains exactly these command keywords
+        for keyword, scroll_name in command_keywords.items():
+            if keyword in words:
                 return scroll_name
         
-        # No match found
+        # For general conversation, don't force a scroll match
+        # Return None to allow the main.py to handle it as general conversation
         return None
+
+    def cast_scroll(self, scroll_name: str, parameters: dict = None) -> dict:
+        """
+        Cast a scroll using the unified scroll engine.
+        
+        Args:
+            scroll_name: Name of the scroll to cast
+            parameters: Scroll parameters
+            
+        Returns:
+            Scroll execution result
+        """
+        from ..scrolls.scroll_engine import cast_scroll as engine_cast_scroll
+        
+        # Use the unified scroll engine
+        result = engine_cast_scroll(scroll_name, parameters or {})
+        
+        # Convert ScrollResult to dict for backward compatibility
+        return {
+            "scroll": scroll_name,
+            "result": result.output,
+            "status": "success" if result.success else "failed",
+            "execution_time": result.execution_time,
+            "metadata": result.metadata
+        }
+
+    def list_scrolls(self) -> dict:
+        """
+        List all available scrolls using the unified scroll engine.
+        Returns:
+            dict: Mapping of scroll names to their descriptions and metadata.
+        """
+        from ..scrolls.scroll_engine import list_scrolls as engine_list_scrolls
+        
+        # Use the unified scroll engine
+        scrolls = engine_list_scrolls()
+        
+        # Convert to the expected format for backward compatibility
+        result = {}
+        for scroll_name, scroll_info in scrolls.items():
+            result[scroll_name] = {
+                "description": scroll_info.get("description", "No description"),
+                "external_access": scroll_info.get("is_external", False)
+            }
+        
+        return result
+
+# Module-level instance
+lam_engine = LAMEngine()

@@ -4,7 +4,8 @@ Provides emotion detection, sentiment analysis, and emotional state tracking.
 """
 
 import re
-from typing import Dict, List, Tuple, Optional
+import logging
+from typing import Dict, List, Tuple, Optional, Any
 from dataclasses import dataclass
 from enum import Enum
 

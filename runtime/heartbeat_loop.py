@@ -1,9 +1,10 @@
 import time
 import logging
-from core.symbolic_map import get_symbolic_state
-from memory.memory_graph import check_memory_load
-from emotion.amygdala import get_emotional_status
-from soul.tenets import log_heartbeat_principles
+from unimind.core.symbolic_map import SymbolicMap
+from unimind.memory.memory_graph import MemoryGraph
+from unimind.emotion.emotion_classifier import EmotionClassifier
+from unimind.soul.tenets import load_tenets
+
 
 # Heartbeat loop configuration
 HEARTBEAT_INTERVAL = 5  # in seconds

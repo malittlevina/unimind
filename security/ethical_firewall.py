@@ -1,6 +1,4 @@
-
-
-from security.encryption_service import encrypt_data, decrypt_data
+from unimind.security.encryption_service import EncryptionService
 
 class EthicalFirewall:
     def __init__(self):

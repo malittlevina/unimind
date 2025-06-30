@@ -9,7 +9,7 @@ from .emotion_classifier import EmotionClassifier, EmotionCategory, EmotionResul
 from .lam_engine import LAMEngine, lam_engine
 from .llm_engine import LLMEngine, llm_engine, run_llm_inference
 from .text_to_3d import TextTo3D, ModelFormat, ModelResult, text_to_3d, generate_3d_model, convert_format
-from .text_to_code import TextToCodeEngine, SimpleLLM, text_to_code_engine
+from .text_to_code import TextToCodeEngine, SimpleLLM, engine as text_to_code_engine
 from .text_to_logic import TextToLogic, LogicType, LogicResult, text_to_logic, analyze_syntax, interpret_meaning, visualize_concepts
 from .text_to_sql import TextToSQL, SQLOperation, SQLResult, text_to_sql, convert_to_sql, set_schema
 from .text_to_shell import TextToShell, ShellOperation, ShellResult, text_to_shell, convert_to_shell, execute_command

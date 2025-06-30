@@ -1,14 +1,21 @@
 """
-vision_model.py – Vision processing and analysis for Unimind native models.
-Provides image processing, object detection, scene analysis, and visual understanding.
+vision_model.py – Vision processing for ThothOS/Unimind.
+Provides image processing, object recognition, and visual analysis capabilities.
 """
 
-import cv2
-import numpy as np
-from typing import Dict, List, Optional, Tuple, Any
+import logging
+from typing import Dict, List, Optional, Any, Union
 from dataclasses import dataclass
 from enum import Enum
-import time
+import numpy as np
+
+# Make OpenCV optional
+try:
+    import cv2
+    OPENCV_AVAILABLE = True
+except ImportError:
+    OPENCV_AVAILABLE = False
+    logging.warning("OpenCV (cv2) not available. Vision features will be limited.")
 
 class VisionTask(Enum):
     """Enumeration of vision tasks."""
@@ -40,6 +47,7 @@ class VisionModel:
     
     def __init__(self):
         """Initialize the vision model."""
+        self.logger = logging.getLogger('VisionModel')
         self.object_classes = [
             "person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck", "boat",
             "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat",
@@ -69,238 +77,257 @@ class VisionModel:
         self.face_cascade = None
         self.eye_cascade = None
         
-        try:
-            # Try to load OpenCV cascades
-            self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-            self.eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
-        except:
-            print("Warning: OpenCV cascades not available")
+        # Initialize face detection if OpenCV is available
+        if OPENCV_AVAILABLE:
+            try:
+                self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+            except Exception as e:
+                self.logger.warning(f"Could not load face cascade: {e}")
+        
+        self.logger.info("Vision model initialized")
         
     def process_image(self, image_path: str, tasks: List[VisionTask] = None) -> VisionResult:
         """
-        Process an image with specified vision tasks.
+        Process an image with specified tasks.
         
         Args:
             image_path: Path to the image file
             tasks: List of vision tasks to perform
             
         Returns:
-            VisionResult containing processing results
+            VisionResult with analysis results
         """
-        if tasks is None:
-            tasks = [VisionTask.OBJECT_DETECTION, VisionTask.SCENE_CLASSIFICATION]
-        
-        # Load image
-        try:
-            image = cv2.imread(image_path)
-            if image is None:
-                raise ValueError(f"Could not load image: {image_path}")
-        except Exception as e:
+        if not OPENCV_AVAILABLE:
             return VisionResult(
-                task=VisionTask.OBJECT_DETECTION,
-                confidence=0.0,
+                success=False,
+                error="OpenCV not available. Install cv2 for vision features.",
+                tasks_completed=[],
                 objects=[],
                 scene_type=None,
+                faces=[],
                 emotions=[],
                 colors=[],
                 text=[],
-                metadata={"error": str(e)}
+                motion_detected=False,
+                metadata={}
             )
         
-        # Process each task
-        objects = []
-        scene_type = None
-        emotions = []
-        colors = []
-        text = []
-        metadata = {}
-        
-        for task in tasks:
-            if task == VisionTask.OBJECT_DETECTION:
-                objects = self._detect_objects(image)
-            elif task == VisionTask.SCENE_CLASSIFICATION:
-                scene_type = self._classify_scene(image)
-            elif task == VisionTask.FACE_RECOGNITION:
-                faces = self._detect_faces(image)
-                objects.extend(faces)
-            elif task == VisionTask.EMOTION_DETECTION:
-                emotions = self._detect_emotions(image)
-            elif task == VisionTask.COLOR_ANALYSIS:
-                colors = self._analyze_colors(image)
-            elif task == VisionTask.TEXT_OCR:
-                text = self._extract_text(image)
-            elif task == VisionTask.MOTION_DETECTION:
-                motion = self._detect_motion(image)
-                metadata["motion_detected"] = motion
-        
-        # Calculate overall confidence
-        confidence = self._calculate_confidence(objects, scene_type, emotions)
-        
-        return VisionResult(
-            task=tasks[0] if tasks else VisionTask.OBJECT_DETECTION,
-            confidence=confidence,
-            objects=objects,
-            scene_type=scene_type,
-            emotions=emotions,
-            colors=colors,
-            text=text,
-            metadata=metadata
-        )
+        try:
+            # Load image
+            image = cv2.imread(image_path)
+            if image is None:
+                return VisionResult(
+                    success=False,
+                    error=f"Could not load image: {image_path}",
+                    tasks_completed=[],
+                    objects=[],
+                    scene_type=None,
+                    faces=[],
+                    emotions=[],
+                    colors=[],
+                    text=[],
+                    motion_detected=False,
+                    metadata={}
+                )
+            
+            # Default to all tasks if none specified
+            if tasks is None:
+                tasks = list(VisionTask)
+            
+            results = {
+                'objects': [],
+                'scene_type': None,
+                'faces': [],
+                'emotions': [],
+                'colors': [],
+                'text': [],
+                'motion_detected': False
+            }
+            
+            # Perform requested tasks
+            for task in tasks:
+                if task == VisionTask.OBJECT_DETECTION:
+                    results['objects'] = self._detect_objects(image)
+                elif task == VisionTask.SCENE_CLASSIFICATION:
+                    results['scene_type'] = self._classify_scene(image)
+                elif task == VisionTask.FACE_RECOGNITION:
+                    results['faces'] = self._detect_faces(image)
+                elif task == VisionTask.EMOTION_DETECTION:
+                    results['emotions'] = self._detect_emotions(image)
+                elif task == VisionTask.COLOR_ANALYSIS:
+                    results['colors'] = self._analyze_colors(image)
+                elif task == VisionTask.TEXT_OCR:
+                    results['text'] = self._extract_text(image)
+                elif task == VisionTask.MOTION_DETECTION:
+                    results['motion_detected'] = self._detect_motion(image)
+            
+            return VisionResult(
+                success=True,
+                error=None,
+                tasks_completed=[task.value for task in tasks],
+                objects=results['objects'],
+                scene_type=results['scene_type'],
+                faces=results['faces'],
+                emotions=results['emotions'],
+                colors=results['colors'],
+                text=results['text'],
+                motion_detected=results['motion_detected'],
+                metadata={
+                    'image_path': image_path,
+                    'image_size': f"{image.shape[1]}x{image.shape[0]}",
+                    'opencv_available': True
+                }
+            )
+            
+        except Exception as e:
+            self.logger.error(f"Error processing image: {e}")
+            return VisionResult(
+                success=False,
+                error=str(e),
+                tasks_completed=[],
+                objects=[],
+                scene_type=None,
+                faces=[],
+                emotions=[],
+                colors=[],
+                text=[],
+                motion_detected=False,
+                metadata={}
+            )
     
-    def _detect_objects(self, image: np.ndarray) -> List[Dict[str, Any]]:
+    def _detect_objects(self, image: Union[np.ndarray, None]) -> List[Dict[str, Any]]:
         """Detect objects in the image."""
+        if image is None or not OPENCV_AVAILABLE:
+            return []
+        
         objects = []
         
-        # Convert to grayscale for processing
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        # Simple object detection using color and shape analysis
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         
-        # Simple edge detection for demonstration
-        edges = cv2.Canny(gray, 50, 150)
-        contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # Detect people (skin color)
+        lower_skin = np.array([0, 20, 70], dtype=np.uint8)
+        upper_skin = np.array([20, 255, 255], dtype=np.uint8)
+        skin_mask = cv2.inRange(hsv, lower_skin, upper_skin)
         
-        # Filter contours by area
-        for contour in contours:
-            area = cv2.contourArea(contour)
-            if area > 1000:  # Minimum area threshold
-                x, y, w, h = cv2.boundingRect(contour)
-                objects.append({
-                    "class": "unknown_object",
-                    "confidence": 0.6,
-                    "bbox": [x, y, w, h],
-                    "area": area
-                })
+        if np.sum(skin_mask) > 1000:
+            objects.append({
+                "class": "person",
+                "confidence": 0.7,
+                "bbox": [0, 0, image.shape[1], image.shape[0]]
+            })
         
         return objects
     
-    def _classify_scene(self, image: np.ndarray) -> Optional[str]:
+    def _classify_scene(self, image: Union[np.ndarray, None]) -> Optional[str]:
         """Classify the scene type."""
+        if image is None or not OPENCV_AVAILABLE:
+            return None
+        
         # Simple scene classification based on color distribution
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         
-        # Calculate color statistics
-        mean_hue = np.mean(hsv[:, :, 0])
-        mean_saturation = np.mean(hsv[:, :, 1])
-        mean_value = np.mean(hsv[:, :, 2])
+        # Check for green (outdoor/nature)
+        green_mask = cv2.inRange(hsv, np.array([40, 40, 40]), np.array([80, 255, 255]))
+        green_ratio = np.sum(green_mask) / (image.shape[0] * image.shape[1])
         
-        # Simple heuristics for scene classification
-        if mean_saturation > 100:
-            if mean_hue < 60:  # Green/Yellow
-                return "nature"
-            elif mean_hue < 120:  # Blue
-                return "outdoor"
-            else:
-                return "urban"
-        elif mean_value < 100:
-            return "indoor"
-        else:
+        if green_ratio > 0.3:
             return "outdoor"
+        else:
+            return "indoor"
     
-    def _detect_faces(self, image: np.ndarray) -> List[Dict[str, Any]]:
+    def _detect_faces(self, image: Union[np.ndarray, None]) -> List[Dict[str, Any]]:
         """Detect faces in the image."""
-        faces = []
+        if image is None or not OPENCV_AVAILABLE or self.face_cascade is None:
+            return []
         
-        if self.face_cascade is None:
-            return faces
+        faces = []
         
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         detected_faces = self.face_cascade.detectMultiScale(gray, 1.1, 4)
         
         for (x, y, w, h) in detected_faces:
             faces.append({
-                "class": "face",
-                "confidence": 0.8,
                 "bbox": [x, y, w, h],
+                "confidence": 0.8,
                 "landmarks": []
             })
         
         return faces
     
-    def _detect_emotions(self, image: np.ndarray) -> List[Dict[str, Any]]:
+    def _detect_emotions(self, image: Union[np.ndarray, None]) -> List[Dict[str, Any]]:
         """Detect emotions in the image."""
+        if image is None or not OPENCV_AVAILABLE:
+            return []
+        
         emotions = []
         
-        # Placeholder emotion detection
-        # In a real implementation, this would use a trained emotion recognition model
-        emotions.append({
-            "emotion": "neutral",
-            "confidence": 0.7,
-            "bbox": [0, 0, image.shape[1], image.shape[0]]
-        })
+        # Simple emotion detection based on color analysis
+        # In a real implementation, this would use a trained model
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        
+        # Check for warm colors (happy/energetic)
+        warm_mask = cv2.inRange(hsv, np.array([0, 100, 100]), np.array([30, 255, 255]))
+        warm_ratio = np.sum(warm_mask) / (image.shape[0] * image.shape[1])
+        
+        if warm_ratio > 0.2:
+            emotions.append({
+                "emotion": "happy",
+                "confidence": 0.6,
+                "bbox": [0, 0, image.shape[1], image.shape[0]]
+            })
         
         return emotions
     
-    def _analyze_colors(self, image: np.ndarray) -> List[Dict[str, Any]]:
+    def _analyze_colors(self, image: Union[np.ndarray, None]) -> List[Dict[str, Any]]:
         """Analyze dominant colors in the image."""
+        if image is None or not OPENCV_AVAILABLE:
+            return []
+        
         colors = []
         
-        # Resize image for faster processing
-        small_image = cv2.resize(image, (50, 50))
+        # Simple color analysis
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         
-        # Reshape to list of pixels
-        pixels = small_image.reshape(-1, 3)
+        # Find dominant colors
+        pixels = hsv.reshape(-1, 3)
+        unique, counts = np.unique(pixels, axis=0, return_counts=True)
         
-        # Find dominant colors using k-means
-        from sklearn.cluster import KMeans
-        try:
-            kmeans = KMeans(n_clusters=5, random_state=42)
-            kmeans.fit(pixels)
-            
-            # Get dominant colors
-            dominant_colors = kmeans.cluster_centers_.astype(int)
-            labels = kmeans.labels_
-            
-            for i, color in enumerate(dominant_colors):
-                count = np.sum(labels == i)
-                percentage = count / len(labels)
-                
-                colors.append({
-                    "color": color.tolist(),
-                    "percentage": percentage,
-                    "hex": "#{:02x}{:02x}{:02x}".format(color[2], color[1], color[0])
-                })
-        except ImportError:
-            # Fallback if sklearn is not available
+        # Get top 3 dominant colors
+        top_indices = np.argsort(counts)[-3:]
+        
+        for idx in top_indices:
+            h, s, v = unique[idx]
             colors.append({
-                "color": [128, 128, 128],
-                "percentage": 1.0,
-                "hex": "#808080"
+                "hue": int(h),
+                "saturation": int(s),
+                "value": int(v),
+                "frequency": int(counts[idx])
             })
         
         return colors
     
-    def _extract_text(self, image: np.ndarray) -> List[str]:
+    def _extract_text(self, image: Union[np.ndarray, None]) -> List[str]:
         """Extract text from the image using OCR."""
+        if image is None or not OPENCV_AVAILABLE:
+            return []
+        
         text = []
         
         # Placeholder OCR implementation
-        # In a real implementation, this would use Tesseract or similar OCR engine
-        text.append("Sample text detected")
+        # In a real implementation, this would use Tesseract or similar
+        text.append("Sample text from image")
         
         return text
     
-    def _detect_motion(self, image: np.ndarray) -> bool:
+    def _detect_motion(self, image: Union[np.ndarray, None]) -> bool:
         """Detect motion in the image."""
+        if image is None or not OPENCV_AVAILABLE:
+            return False
+        
         # Placeholder motion detection
         # In a real implementation, this would compare with previous frames
         return False
-    
-    def _calculate_confidence(self, objects: List[Dict], scene_type: Optional[str], emotions: List[Dict]) -> float:
-        """Calculate overall confidence score."""
-        confidence = 0.5  # Base confidence
-        
-        # Boost confidence for object detection
-        if objects:
-            confidence += 0.2
-        
-        # Boost confidence for scene classification
-        if scene_type:
-            confidence += 0.2
-        
-        # Boost confidence for emotion detection
-        if emotions:
-            confidence += 0.1
-        
-        return min(confidence, 1.0)
     
     def get_image_info(self, image_path: str) -> Dict[str, Any]:
         """
