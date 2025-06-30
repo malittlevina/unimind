@@ -1,7 +1,4 @@
-# core_router.py
-
-from unimind.persona_manifest import load_persona_manifest
-from unimind.personas import (
+from unimind.daemon_web.personas import (
     persona_01, persona_02, persona_03, persona_04,
     persona_05, persona_06, persona_07, persona_08,
     persona_09
@@ -23,6 +20,22 @@ PERSONA_HANDLERS = {
 import logging
 
 logging.basicConfig(level=logging.INFO)
+
+def load_persona_manifest():
+    """
+    Load persona manifest configuration.
+    """
+    return {
+        "default_persona": "Navigator",
+        "fallback_persona": "Sentinel"
+    }
+
+def start_persona_services(mind):
+    """
+    Start persona services for the daemon web interface.
+    """
+    logging.info("Starting persona services...")
+    return {"status": "persona_services_started", "mind": mind}
 
 def route_message(message, context):
     """

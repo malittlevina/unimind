@@ -50,3 +50,10 @@ def evaluate_against_tenets(context):
         tenet["name"]: tenet["logic"](context)
         for tenet in load_tenets()
     }
+
+
+def foundational_tenets():
+    """
+    Return a list of foundational tenets for meta-ethical reasoning.
+    """
+    return get_core_tenets()

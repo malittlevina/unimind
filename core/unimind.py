@@ -3,11 +3,17 @@
 import logging
 
 from unimind.logic.symbolic_reasoner import SymbolicReasoner
-from ethics.pineal_gland import EthicalCore
+from unimind.ethics.pineal_gland import EthicalCore
 from unimind.memory.memory_graph import MemoryGraph
 from unimind.cortex.prefrontal_cortex import PrefrontalCortex
 from unimind.planning.action_planner import ActionPlanner
-from unimind.soul.tenets import get_active_tenets
+from unimind.soul.tenets import load_tenets
+
+def get_active_tenets():
+    """
+    Placeholder for getting active tenets. Returns an empty list.
+    """
+    return []
 
 class Unimind:
     def __init__(self):
@@ -22,6 +28,20 @@ class Unimind:
         self.tenets = get_active_tenets()
         self.plugins = {}
         self.logger.info("Unimind initialized successfully.")
+
+    def attach_ethics(self, ethics):
+        """
+        Attach an ethics engine to the Unimind instance.
+        """
+        self.ethics = ethics
+        self.logger.info("Ethics engine attached.")
+
+    def attach_memory(self, memory):
+        """
+        Attach a memory engine to the Unimind instance.
+        """
+        self.memory = memory
+        self.logger.info("Memory engine attached.")
 
     def process_thought(self, input_signal):
         context = self.memory.retrieve_relevant(input_signal)
@@ -76,3 +96,10 @@ class Unimind:
                 self.logger.info(f"Identity drift detected: {changes}")
             if hasattr(self.memory, "store_identity_drift"):
                 self.memory.store_identity_drift(changes)
+
+    def register_scrolls(self, scrolls):
+        """
+        Register scrolls with the Unimind instance.
+        """
+        self.scrolls = scrolls
+        self.logger.info("Scrolls registered.")

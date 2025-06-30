@@ -34,3 +34,39 @@ class ActionPlanner:
     def clear_all(self) -> None:
         self.plan_queue.clear()
         self.completed_actions.clear()
+
+    def plan_evaluation(self) -> Dict[str, Any]:
+        """
+        Evaluates the current action plan and returns basic metrics:
+        - Total pending actions
+        - Total completed actions
+        - Highest priority action
+        """
+        evaluation = {
+            "total_pending": len(self.plan_queue),
+            "total_completed": len(self.completed_actions),
+            "highest_priority_action": None
+        }
+        if self.plan_queue:
+            evaluation["highest_priority_action"] = self.plan_queue[0]["name"]
+        return evaluation
+    def plan_action(self, action_name: str, priority: int = 5, **kwargs) -> Dict[str, Any]:
+        """
+        Quickly defines and queues a new action using standard or dynamic metadata.
+
+        Args:
+            action_name (str): The name of the action to plan.
+            priority (int): The action's priority (lower is more important).
+            **kwargs: Additional metadata fields.
+
+        Returns:
+            Dict[str, Any]: The action that was created and added to the plan.
+        """
+        metadata = dict(kwargs)
+        self.add_action(action_name, priority, metadata)
+        return {
+            "status": "queued",
+            "action": action_name,
+            "priority": priority,
+            "metadata": metadata
+        }

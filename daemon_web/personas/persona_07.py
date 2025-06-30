@@ -1,8 +1,8 @@
 # Persona 7: Ethical Negotiator
 # Specialization: Moral evaluation, fairness logic, ethical trade-offs
 
-from ethics.pineal_gland import evaluate_ethics
-from logic.symbolic_reasoner import SymbolicReasoner
+from unimind.ethics.pineal_gland import evaluate_ethics
+from unimind.logic.symbolic_reasoner import SymbolicReasoner
 
 class EthicalNegotiator:
     def __init__(self):
@@ -46,3 +46,14 @@ class EthicalNegotiator:
                 "predicted_outcome": tree
             })
         return sorted(consequences, key=lambda x: x['ethical_score'], reverse=True)
+
+def handle(message, context):
+    """
+    Handle a message for Persona 07 (Storyweaver).
+    Returns a summary for now.
+    """
+    return {
+        "persona": "Storyweaver",
+        "message": message,
+        "context": context
+    }

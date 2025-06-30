@@ -10,10 +10,10 @@ Prefrontal Cortex – Responsible for higher-order executive functions:
 
 from datetime import datetime
 
-from ethics.pineal_gland import evaluate_morality
-from logic.symbolic_reasoner import detect_contradictions
-from planning.action_planner import plan_evaluation
-from soul.tenets import TENETS
+from unimind.ethics.pineal_gland import evaluate_morality
+from unimind.logic.symbolic_reasoner import SymbolicReasoner
+from unimind.planning.action_planner import ActionPlanner
+from unimind.soul.tenets import load_tenets
 
 class PrefrontalCortex:
     def __init__(self):
@@ -80,3 +80,20 @@ class PrefrontalCortex:
         Returns the timestamp of the last reflection event.
         """
         return self.last_reflection_time
+
+    def analyze_logical_structure(self, input_text):
+        """
+        Analyze the logical structure of a given input using the SymbolicReasoner.
+        Returns logical relationships, detected inconsistencies, and reasoning chain.
+        """
+        reasoner = SymbolicReasoner()
+        parsed = reasoner.parse_input(input_text)
+        analysis = reasoner.evaluate_input(parsed)
+
+        return {
+            "input": input_text,
+            "parsed_structure": parsed,
+            "logical_score": analysis.get("logical_score"),
+            "reasoning_trace": analysis.get("reasoning_trace"),
+            "contradiction_found": analysis.get("contradiction_found", False)
+        }

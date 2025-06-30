@@ -4,16 +4,25 @@ This engine merges scroll registration, ritual templates, triggers, metrics, com
 Ensures symbolic scrolls can be registered, invoked, and logged with full support for inter-module communication.
 """
 
-# Scroll Registry
-# Define and store scroll definitions, metadata, and default behaviors.
-
-registered_scroll_definitions = {}
-
-from unimind.memory.memory_graph import log_memory_event
+from unimind.memory.memory_graph import memory_graph
+from unimind.memory.memory_graph import MemoryGraph
 from unimind.ethics.pineal_gland import evaluate_ethics
-from unimind.logic.symbolic_reasoner import evaluate_scroll_logic
+from unimind.logic.symbolic_reasoner import SymbolicReasoner
 
 import re
+
+# Dictionary to store scroll definitions
+registered_scroll_definitions = {}
+
+class ScrollEngine:
+    def __init__(self):
+        self.status = "initialized"
+    def register_scrolls(self, scrolls):
+        self.status = "scrolls_registered"
+    def cast(self, name, context=None):
+        print(f"[ScrollEngine] Casting scroll: {name}")
+    def get_status(self):
+        return self.status
 
 def validate_scroll_name(name):
     if not re.match("^[a-z0-9_]+$", name):
@@ -26,7 +35,7 @@ def define_scroll(name, function, category=None, ethical_weight=None):
         "category": category,
         "ethical_weight": ethical_weight
     }
-    log_memory_event(f"Scroll defined: {name}", category="scroll_registry")
+    memory_graph.log_memory_event("scroll_defined", f"Scroll defined: {name}")
 
 def get_scroll(name):
     return registered_scroll_definitions.get(name)
@@ -140,6 +149,23 @@ def register_ritual_templates():
     for ritual_name, steps in ritual_templates.items():
         define_scroll(ritual_name, lambda ctx, s=steps: [cast_scroll(step, ctx) for step in s], category="ritual", ethical_weight=0.6)
 register_ritual_templates()
+
+def invoke_scroll(name, context=None):
+    """
+    Public entry point for invoking a scroll by name.
+    Performs ethical, logical, and execution flow with error handling.
+    """
+    print(f"🌀 Invoking scroll: {name}")
+    try:
+        cast_scroll(name, context=context)
+    except ScrollNotFoundError as e:
+        print(f"❌ Error: {e}")
+    except ScrollEthicalFailure as e:
+        print(f"⚖️ Ethical Block: {e}")
+    except ScrollExecutionError as e:
+        print(f"💥 Execution Failed: {e}")
+    except Exception as e:
+        print(f"🚨 Unknown Error: {e}")
 
 # Scroll System Documentation
 

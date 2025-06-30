@@ -12,6 +12,20 @@ import logging
 from datetime import datetime
 
 class PinealGland:
+
+    def evaluate_morality(self, statement: str) -> str:
+        """
+        Provides a high-level morality judgment of the statement.
+        Returns one of: 'Moral', 'Immoral', or 'Ambiguous'.
+        """
+        results = self.evaluate(statement)
+        judgment = results.get("judgment", "Unclear")
+        if judgment == "Ethically Aligned":
+            return "Moral"
+        elif judgment == "Ethically Misaligned":
+            return "Immoral"
+        else:
+            return "Ambiguous"
     def __init__(self):
         self.core_tenets = tenets.load_tenets()
         self.log = []
@@ -137,9 +151,50 @@ class PinealGland:
         return str(delta)
 
 
+# Lightweight alias for PinealGland providing essential ethical evaluation functions
+class EthicalCore:
+    """
+    A lightweight alias for PinealGland providing essential ethical evaluation functions
+    without full symbolic introspection or memory access.
+    Intended for use by subsystems that need ethical judgments but not full reasoning context.
+    """
+    def __init__(self):
+        self.engine = PinealGland()
+
+    def evaluate_action(self, statement: str) -> str:
+        """
+        Quickly evaluates the ethical alignment of a given statement.
+        Returns only the judgment string ('Ethically Aligned', 'Ethically Misaligned', or 'Unclear').
+        """
+        result = self.engine.evaluate(statement)
+        return result.get("judgment", "Unclear")
+
+
 
 # Expose evaluate_ethics as a module-level function for direct import
 evaluate_ethics = PinealGland().evaluate
+evaluate_morality = PinealGland().evaluate_morality
+
+def evaluate_moral_proposition(proposition: str, context: dict = None) -> dict:
+    """
+    Evaluate a moral proposition against ethical tenets.
+    
+    Args:
+        proposition: The moral proposition to evaluate
+        context: Optional context dictionary
+        
+    Returns:
+        Dictionary containing evaluation results
+    """
+    pineal = PinealGland()
+    result = pineal.evaluate(proposition)
+    
+    return {
+        "proposition": proposition,
+        "judgment": result.get("judgment", "Unclear"),
+        "details": result.get("details", []),
+        "context": context or {}
+    }
 
 # EthicalGovernor class for use in other modules (e.g., memory_graph.py)
 class EthicalGovernor:

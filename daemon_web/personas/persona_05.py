@@ -43,3 +43,14 @@ class Persona5TacticalStrategist:
 
     def activate(self):
         print(f"[{self.name}] Persona activated. Ready for strategic operations.")
+
+def handle(message, context):
+    """
+    Handle a message for Persona 05 (Strategist).
+    Returns a summary for now.
+    """
+    return {
+        "persona": "Strategist",
+        "message": message,
+        "context": context
+    }

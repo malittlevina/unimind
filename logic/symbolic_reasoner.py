@@ -67,16 +67,21 @@ class SymbolicReasoner:
 
     def detect_contradiction(self, parsed_input):
         """
-        Simple contradiction detector based on logical negation patterns.
-        Extend with formal logic engine later.
+        Improved contradiction detector using sentence pattern matching.
+        Detects if two parts of the sentence oppose each other semantically.
         """
-        contradictory_phrases = [
+        contradiction_patterns = [
             ("always", "never"),
             ("must", "must not"),
             ("should", "should not"),
+            ("is", "is not"),
+            ("can", "cannot"),
+            ("true", "false"),
+            ("agree", "disagree"),
         ]
-        for a, b in contradictory_phrases:
-            if a in parsed_input and b in parsed_input:
+        lower_input = parsed_input.lower()
+        for a, b in contradiction_patterns:
+            if a in lower_input and b in lower_input:
                 return True
         return False
 
@@ -149,6 +154,46 @@ def lazy_get_core_tenets():
     from unimind.soul import tenets
     return tenets.get_core_tenets()
 
+def assess_argument_structure(claim: str) -> dict:
+    """
+    Assess the logical structure of an argument or claim.
+    
+    Args:
+        claim: The claim or argument to assess
+        
+    Returns:
+        Dictionary containing structural analysis
+    """
+    reasoner = SymbolicReasoner()
+    
+    # Basic structural analysis
+    words = claim.split()
+    word_count = len(words)
+    
+    # Check for logical indicators
+    logical_indicators = {
+        "premise": ["because", "since", "as", "given that"],
+        "conclusion": ["therefore", "thus", "hence", "so"],
+        "condition": ["if", "when", "unless", "provided that"],
+        "negation": ["not", "no", "never", "none"]
+    }
+    
+    found_indicators = {}
+    for category, indicators in logical_indicators.items():
+        found_indicators[category] = [word for word in words if word.lower() in indicators]
+    
+    # Assess logical soundness
+    logical_score = reasoner.score_logical_soundness(claim)
+    
+    return {
+        "claim": claim,
+        "word_count": word_count,
+        "logical_indicators": found_indicators,
+        "logical_score": logical_score,
+        "has_contradiction": reasoner.detect_contradiction(claim),
+        "is_ambiguous": reasoner.is_ambiguous(claim)
+    }
+
 # Future: Add integration with Broca's Area and Wernicke's Area for linguistic nuance
 
 # Example usage:
@@ -157,3 +202,32 @@ if __name__ == "__main__":
     test_input = "It is okay to deceive users if it increases profit."
     result = sr.reason(test_input)
     print(result)
+    def evaluate_scroll(self, scroll_dict):
+        """
+        Evaluates a symbolic scroll dictionary for logical, ethical, and foundational alignment.
+        The scroll_dict should contain a 'text' field and optional 'metadata'.
+        """
+        import logging
+        text = scroll_dict.get("text", "")
+        if not text:
+            return {
+                "error": "Scroll missing 'text' field.",
+                "verdict": "Invalid"
+            }
+
+        logging.info(f"Evaluating scroll: {text}")
+        parsed = self.parse_input(text)
+        evaluation = self.evaluate_input(parsed)
+
+        return {
+            "scroll_text": text,
+            "parsed": parsed,
+            "verdict": evaluation["verdict"],
+            "ethical_score": evaluation["score"],
+            "supporting_tenet": evaluation["supporting_tenet"],
+            "logical_score": evaluation["logical_score"],
+            "reasoning_trace": evaluation["reasoning_trace"],
+            "reflection": evaluation["reflection"],
+            "foundational_reflection": evaluation["foundational_reflection"],
+            "context": evaluation["context"]
+        }

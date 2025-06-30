@@ -4,12 +4,33 @@ Specialization: Broca's Area + Wernicke's Area + Occipital Lobe
 Role: Linguistic-Visual Translator and Creative Generator
 """
 
-from unimind.perception.brocas_area import analyze_syntax
-from unimind.perception.wernickes_area import interpret_meaning
-from unimind.perception.occipital_lobe import visualize_concepts
-from unimind.visual.video_synthesis import generate_video
-from unimind.cortex.occipital_lobe.text_to_3d import generate_3d_model
-from unimind.cortex.brocas_area.text_to_text import rephrase_creatively
+from unimind.perception.brocas_area import BrocasArea
+from unimind.perception.wernickes_area import WernickesArea
+from unimind.perception.occipital_lobe import OccipitalLobe
+from unimind.native_models.vision.scene_classifier import SceneClassifier
+from unimind.native_models.vision.object_recognizer import ObjectRecognizer
+from unimind.native_models.vision.emotion_overlay import EmotionOverlay
+from unimind.native_models.text_to_video import generate_video
+from unimind.native_models.text_to_text import transform_text
+from unimind.native_models.text_to_logic import analyze_syntax, interpret_meaning, visualize_concepts
+from unimind.native_models.lam_engine import LAMEngine
+from unimind.native_models.text_to_3d import generate_3d_model
+
+
+def rephrase_creatively(meaning: dict) -> str:
+    """
+    Rephrase content creatively based on meaning interpretation.
+    
+    Args:
+        meaning: Meaning dictionary from interpret_meaning
+        
+    Returns:
+        Creatively rephrased text
+    """
+    # Placeholder implementation
+    original_text = meaning.get("meaning", "")
+    return f"Creative rephrasing: {original_text}"
+
 
 class CreativeSynthesist:
     def __init__(self):
@@ -45,3 +66,15 @@ class CreativeSynthesist:
     def synthesize(self, input_text):
         processed = self.process_input(input_text)
         return self.generate_outputs(processed)
+
+
+def handle(message, context):
+    """
+    Handle a message for Persona 06 (Sentinel).
+    Returns a summary for now.
+    """
+    return {
+        "persona": "Sentinel",
+        "message": message,
+        "context": context
+    }

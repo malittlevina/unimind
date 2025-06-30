@@ -7,7 +7,7 @@ Brain Node Affinity: Prefrontal Cortex, Action Planner, Symbolic Reasoner
 from unimind.planning.action_planner import ActionPlanner
 from unimind.logic.symbolic_reasoner import SymbolicReasoner
 from unimind.core.symbolic_map import SymbolicMap
-from unimind.todo.tasks import register_task
+
 
 class StrategicArchitect:
     def __init__(self):
@@ -46,6 +46,17 @@ class StrategicArchitect:
         Registers a new strategic task to the daemon's todo system.
         """
         return register_task(description=description, priority=priority)
+
+def handle(message, context):
+    """
+    Handle a message for Persona 03 (Mediator).
+    Returns a summary for now.
+    """
+    return {
+        "persona": "Mediator",
+        "message": message,
+        "context": context
+    }
 
 # Example usage:
 # architect = StrategicArchitect()

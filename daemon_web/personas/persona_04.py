@@ -45,3 +45,14 @@ class PersonaEmpathicMediator:
         Suggests ethical preference based on harmony, fairness, and long-term well-being.
         """
         return f"Comparing {action1} and {action2}, the action that preserves dignity and minimizes harm is preferable."
+
+def handle(message, context):
+    """
+    Handle a message for Persona 04 (Dreamer).
+    Returns a summary for now.
+    """
+    return {
+        "persona": "Dreamer",
+        "message": message,
+        "context": context
+    }

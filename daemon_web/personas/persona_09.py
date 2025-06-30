@@ -44,3 +44,14 @@ class Persona09_MetaEthicalPhilosopher:
         recursive_analysis = self.reflect_on_moral_claim(counter)
         positions.append(f"Further analysis: {recursive_analysis['ethical_consideration']}")
         return positions
+
+def handle(message, context):
+    """
+    Handle a message for Persona 09 (Meta-Ethical Philosopher).
+    Returns a summary for now.
+    """
+    return {
+        "persona": "Meta-Ethical Philosopher",
+        "message": message,
+        "context": context
+    }
