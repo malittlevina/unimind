@@ -461,9 +461,12 @@ class TextToLogic:
 # Module-level instance
 text_to_logic = TextToLogic()
 
-def analyze_syntax(text: str) -> LogicResult:
+# Export the engine instance with the expected name
+text_to_logic_engine = text_to_logic
+
+def analyze_syntax(input_text: str, logic_type: LogicType = LogicType.SYNTACTIC) -> LogicResult:
     """Analyze syntax using the module-level instance."""
-    return text_to_logic.analyze_syntax(text)
+    return text_to_logic.analyze_syntax(input_text)
 
 def interpret_meaning(text: str) -> LogicResult:
     """Interpret meaning using the module-level instance."""

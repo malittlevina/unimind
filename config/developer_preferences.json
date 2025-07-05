@@ -1,0 +1,22 @@
+{
+    "development_mode": true,
+    "user_id": "developer",
+    "access_level": "founder",
+    "allowed_features": [
+        "internal_ide",
+        "code_generation",
+        "file_access",
+        "system_override",
+        "emergency_shutdown",
+        "modify_ethics_core",
+        "wipe_memory"
+    ],
+    "safety_level": "development",
+    "auto_approve": true,
+    "debug_mode": true,
+    "log_level": "DEBUG",
+    "backup_enabled": true,
+    "rollback_enabled": true,
+    "sandbox_mode": false,
+    "modification_level": "autonomous"
+} 

@@ -9,8 +9,11 @@ except ImportError:
     logging.warning("OpenCV (cv2) not available. Emotion overlay will be limited.")
 
 class EmotionOverlay:
-    def __init__(self, font=cv2.FONT_HERSHEY_SIMPLEX):
-        self.font = font
+    def __init__(self, font=None):
+        if CV2_AVAILABLE:
+            self.font = font if font is not None else cv2.FONT_HERSHEY_SIMPLEX
+        else:
+            self.font = None
         self.emotion_colors = {
             "happy": (0, 255, 0),    # Green
             "sad": (255, 0, 0),      # Blue

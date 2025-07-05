@@ -351,9 +351,12 @@ class TextToShell:
 # Module-level instance
 text_to_shell = TextToShell()
 
-def convert_to_shell(natural_command: str) -> ShellResult:
+# Export the engine instance with the expected name
+text_to_shell_engine = text_to_shell
+
+def convert_to_shell(input_text: str, operation: ShellOperation = ShellOperation.EXECUTE) -> ShellResult:
     """Convert natural language to shell command using the module-level instance."""
-    return text_to_shell.convert_to_shell(natural_command)
+    return text_to_shell.convert_to_shell(input_text)
 
 def execute_command(shell_result: ShellResult) -> Dict[str, Any]:
     """Execute shell command using the module-level instance."""

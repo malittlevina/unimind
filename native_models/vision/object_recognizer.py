@@ -9,20 +9,20 @@ except ImportError:
     logging.warning("OpenCV (cv2) not available. Object recognition will be limited.")
 
 class ObjectRecognizer:
-    def __init__(self, model_path="yolov5s.onnx", confidence_threshold=0.5):
+    def __init__(self, model_path=None):
+        self.net = None
+        if CV2_AVAILABLE and model_path:
+            self.net = cv2.dnn.readNetFromONNX(model_path)
         self.model_path = model_path
-        self.confidence_threshold = confidence_threshold
         
-        if CV2_AVAILABLE:
-            try:
-                self.net = cv2.dnn.readNetFromONNX(self.model_path)
-            except Exception as e:
-                logging.warning(f"Could not load model: {e}")
-                self.net = None
-        else:
-            self.net = None
-            
         logging.info("ObjectRecognizer initialized.")
+
+    def recognize(self, frame):
+        if not CV2_AVAILABLE or self.net is None:
+            logging.warning("OpenCV (cv2) not available or model not loaded. Cannot recognize objects.")
+            return None
+        # Add recognition logic here
+        return self.net.forward()
 
     def detect_objects(self, frame):
         if not CV2_AVAILABLE or self.net is None:

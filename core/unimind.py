@@ -37,6 +37,7 @@ class UnimindState:
     emotion_state: Optional[Dict[str, Any]] = None
     ethical_status: Optional[Dict[str, Any]] = None
     access_stats: Optional[Dict[str, Any]] = None
+    current_user_id: Optional[str] = None
     
     def __post_init__(self):
         if self.active_scrolls is None:
@@ -56,10 +57,18 @@ class Unimind:
     Integrates all cognitive modules with centralized routing and feedback.
     """
     
-    def __init__(self):
-        """Initialize the Unimind system."""
+    def __init__(self, soul=None):
+        """
+        Initialize the Unimind system.
+        
+        Args:
+            soul: Soul instance with user-specific identity. If None, uses default.
+        """
         self.state = UnimindState()
         self.logger = logging.getLogger('Unimind')
+        
+        # Set up soul (identity system)
+        self.soul = soul
         
         # Initialize core systems
         self._initialize_systems()
@@ -147,12 +156,13 @@ class Unimind:
         self.logger.info(f"Handling performance metric: {event.message}")
         # Could trigger system optimization or resource allocation
     
-    def process_input(self, user_input: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
+    def process_input(self, user_input: str, user_id: Optional[str] = None, context: Dict[str, Any] = None) -> Dict[str, Any]:
         """
-        Process user input through the unified system.
+        Process user input through the unified system with user-specific identity.
         
         Args:
             user_input: User's input text
+            user_id: The user ID for identity-specific processing
             context: Additional context
             
         Returns:
@@ -160,13 +170,17 @@ class Unimind:
         """
         context = context or {}
         
+        # Update current user ID
+        if user_id:
+            self.state.current_user_id = user_id
+        
         try:
             # Emit input processing feedback
             feedback_bus.emit(
                 FeedbackType.SYSTEM_EVENT,
                 "unimind",
                 f"Processing user input: {user_input[:50]}...",
-                {"input_length": len(user_input)},
+                {"input_length": len(user_input), "user_id": user_id},
                 FeedbackLevel.INFO
             )
             
@@ -177,6 +191,16 @@ class Unimind:
             # Route intent using symbolic router
             action_plan = route_intent(user_input, context)
             self.logger.info(f"Action plan: {action_plan.target} (confidence: {action_plan.confidence})")
+            
+            # Check user access to scroll if it's a scroll action
+            if action_plan.action_type.value == "scroll" and self.soul:
+                if not self.soul.can_access_scroll(action_plan.target, user_id or ""):
+                    return {
+                        "success": False,
+                        "output": f"Access denied: You don't have permission to use the '{action_plan.target}' scroll.",
+                        "access_denied": True,
+                        "required_level": "privileged" if action_plan.target in self.soul.get_founder_only_scrolls() else "basic"
+                    }
             
             # Execute action
             result = execute_action(action_plan)
@@ -192,36 +216,35 @@ class Unimind:
                 {
                     "action": action_plan.target,
                     "confidence": action_plan.confidence,
-                    "success": result.get("success", False)
+                    "success": result.get("success", False),
+                    "user_id": user_id
                 },
                 FeedbackLevel.INFO
             )
             
             return {
-                "success": True,
+                "success": result.get("success", False),
+                "output": result.get("result", response),
                 "action": action_plan.target,
                 "confidence": action_plan.confidence,
-                "result": result,
-                "response": response,
-                "intent": intent_analysis
+                "user_id": user_id
             }
             
         except Exception as e:
             self.logger.error(f"Error processing input: {e}")
-            
-            # Emit error feedback
             feedback_bus.emit(
                 FeedbackType.SYSTEM_EVENT,
                 "unimind",
-                f"Failed to process input: {str(e)}",
-                {"error": str(e), "input": user_input},
+                f"Error processing input: {str(e)}",
+                {"error": str(e), "user_id": user_id},
                 FeedbackLevel.ERROR
             )
             
             return {
                 "success": False,
+                "output": f"Error processing your request: {str(e)}",
                 "error": str(e),
-                "response": "I encountered an error processing your request."
+                "user_id": user_id
             }
     
     def _generate_response(self, result: Dict[str, Any], user_input: str, intent_analysis: Dict[str, Any]) -> str:
@@ -604,9 +627,9 @@ class Unimind:
 # Global Unimind instance
 unimind = Unimind()
 
-def process_input(user_input: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
+def process_input(user_input: str, user_id: Optional[str] = None, context: Dict[str, Any] = None) -> Dict[str, Any]:
     """Process user input using the global Unimind instance."""
-    return unimind.process_input(user_input, context)
+    return unimind.process_input(user_input, user_id, context)
 
 def cast_scroll(scroll_name: str, parameters: Dict[str, Any] = None) -> Dict[str, Any]:
     """Cast a scroll using the global Unimind instance."""

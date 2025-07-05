@@ -16,6 +16,7 @@ class ObjectTracker:
         
         if CV2_AVAILABLE:
             self.tracker_available = True
+            self.tracker = cv2.TrackerCSRT_create()
         else:
             self.tracker_available = False
             
@@ -26,11 +27,10 @@ class ObjectTracker:
             return None
             
         try:
-            tracker = cv2.TrackerCSRT_create()
-            success = tracker.init(frame, bbox)
+            success = self.tracker.init(frame, bbox)
             if success:
                 tracker_id = self.next_id
-                self.trackers[tracker_id] = tracker
+                self.trackers[tracker_id] = self.tracker
                 self.next_id += 1
                 return tracker_id
         except Exception as e:
@@ -70,3 +70,10 @@ class ObjectTracker:
             del self.trackers[tracker_id]
             return True
         return False
+
+    def update(self, frame):
+        if not CV2_AVAILABLE or self.tracker is None:
+            logging.warning("OpenCV (cv2) not available or tracker not initialized. Cannot update object tracking.")
+            return None
+        # Add tracking logic here
+        return self.tracker.update(frame)

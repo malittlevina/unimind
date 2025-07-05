@@ -384,6 +384,9 @@ class VoiceModel:
 # Module-level instance
 voice_model = VoiceModel()
 
+# Export the engine instance with the expected name
+voice_engine = voice_model
+
 def speech_to_text(audio_path: str, language: str = "en") -> VoiceResult:
     """Convert speech to text using the module-level instance."""
     return voice_model.speech_to_text(audio_path, language)

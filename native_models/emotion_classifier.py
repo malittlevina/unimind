@@ -215,6 +215,9 @@ class EmotionClassifier:
 # Module-level instance
 emotion_classifier = EmotionClassifier()
 
+# Export the engine instance with the expected name
+emotion_engine = emotion_classifier
+
 def classify_emotion(text: str) -> EmotionResult:
     """Classify emotion using the module-level instance."""
     return emotion_classifier.classify_emotion(text)

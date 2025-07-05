@@ -95,3 +95,11 @@ class SceneClassifier:
                 "label": "Camera error",
                 "confidence": 0.0
             }
+
+    def classify(self, frame):
+        if not CV2_AVAILABLE or self.net is None:
+            logging.warning("OpenCV (cv2) not available or model not loaded. Cannot classify scene.")
+            return None
+        blob = cv2.dnn.blobFromImage(frame, scalefactor=1.0/255, size=(224, 224), mean=(0, 0, 0), swapRB=True, crop=False)
+        self.net.setInput(blob)
+        return self.net.forward()

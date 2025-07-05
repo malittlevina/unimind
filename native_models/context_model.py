@@ -183,6 +183,9 @@ class ContextModel:
 # Module-level context model instance
 context_model = ContextModel()
 
+# Export the engine instance with the expected name
+context_engine = context_model
+
 def add_context(content: str, source: str = "user", context_type: str = "conversation", metadata: Optional[Dict[str, Any]] = None) -> None:
     """Add context using the module-level instance."""
     context_model.add_context(content, source, context_type, metadata)

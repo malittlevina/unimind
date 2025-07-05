@@ -19,7 +19,9 @@
     "self_growth_directives": {
       "optimize_self_daily": true,
       "log_evolution_events": true,
-      "track_personality_drift": true
+      "track_personality_drift": true,
+      "version_tracking_enabled": true,
+      "auto_increment_version_on_commit": true
     },
     "memory_link": "unimind/memory/memory_graph.py",
     "soul_logic_module": "unimind/soul/tenets.py",
@@ -38,13 +40,16 @@
       "notify_user_on_failure": true
     },
     "symbolic_language_reference": "unimind/docs/symbolic_language_guide.md",
-    "self_growth_directives": {
-      "optimize_self_daily": true,
-      "log_evolution_events": true,
-      "track_personality_drift": true,
-      "version_tracking_enabled": true,
-      "auto_increment_version_on_commit": true
-    },
-    "unimind_topology_map": "unimind/docs/unimind_structure_map.json"
+    "unimind_topology_map": "unimind/docs/unimind_structure_map.json",
+    "founder_id": "malittlevina",
+    "founder_ids": ["malittlevina"],
+    "privileged_users": ["malittlevina"],
+    "founder_only_scrolls": [
+      "edit_soul",
+      "modify_ethics_core", 
+      "wipe_memory",
+      "system_override",
+      "emergency_shutdown"
+    ]
   }
 }

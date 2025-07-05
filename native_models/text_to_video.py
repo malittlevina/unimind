@@ -318,9 +318,12 @@ class TextToVideo:
 # Module-level instance
 text_to_video = TextToVideo()
 
-def generate_video(description: str, duration: int = 10, format: VideoFormat = VideoFormat.MP4, style: VideoStyle = VideoStyle.REALISTIC, resolution: Tuple[int, int] = None) -> VideoResult:
+# Export the engine instance with the expected name
+text_to_video_engine = text_to_video
+
+def generate_video(input_text: str, style: VideoStyle = VideoStyle.REALISTIC, format: VideoFormat = VideoFormat.MP4) -> VideoResult:
     """Generate video using the module-level instance."""
-    return text_to_video.generate_video(description, duration, format, style, resolution)
+    return text_to_video.generate_video(input_text, 10, format, style)
 
 def convert_format(input_path: str, output_format: VideoFormat) -> str:
     """Convert video format using the module-level instance."""

@@ -383,6 +383,9 @@ class VisionModel:
 # Module-level instance
 vision_model = VisionModel()
 
+# Export the engine instance with the expected name
+vision_engine = vision_model
+
 def process_image(image_path: str, tasks: List[VisionTask] = None) -> VisionResult:
     """Process image using the module-level instance."""
     return vision_model.process_image(image_path, tasks)

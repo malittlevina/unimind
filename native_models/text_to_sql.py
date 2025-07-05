@@ -291,9 +291,12 @@ class TextToSQL:
 # Module-level instance
 text_to_sql = TextToSQL()
 
-def convert_to_sql(natural_query: str) -> SQLResult:
+# Export the engine instance with the expected name
+text_to_sql_engine = text_to_sql
+
+def convert_to_sql(input_text: str, operation: SQLOperation = SQLOperation.SELECT) -> SQLResult:
     """Convert natural language to SQL using the module-level instance."""
-    return text_to_sql.convert_to_sql(natural_query)
+    return text_to_sql.convert_to_sql(input_text)
 
 def set_schema(schema: Dict[str, List[str]]) -> None:
     """Set schema using the module-level instance."""

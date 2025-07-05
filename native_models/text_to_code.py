@@ -7,6 +7,16 @@ import ast
 import textwrap
 from typing import Optional, Dict, Any
 
+# Import SOTA model loaders
+try:
+    from unimind.native_models.free_models.code.codellama_7b_loader import Codellama_7BLoader
+except ImportError:
+    Codellama_7BLoader = None
+try:
+    from unimind.native_models.free_models.code.deepseek_coder_7b_loader import Deepseek_Coder_7BLoader
+except ImportError:
+    Deepseek_Coder_7BLoader = None
+
 class SimpleLLM:
     """
     Placeholder LLM class. Replace with a real LLM integration (OpenAI, HuggingFace, etc).
@@ -22,17 +32,29 @@ class SimpleLLM:
         return f"""# LLM({self.model_name}) generated code for: {prompt}\ndef dummy_function():\n    pass\n"""
 
 class TextToCodeEngine:
-    def __init__(self, llm: Optional[Any] = None):
-        """
-        Initialize the engine. Optionally provide an LLM or API client for advanced code generation.
-        """
-        self.llm = llm
+    """
+    Unified Text-to-Code Engine supporting rule-based, SimpleLLM, and SOTA model backends.
+    Backends: 'rule-based', 'simplellm', 'codellama', 'deepseek'
+    """
+    def __init__(self, backend: str = "rule-based", quantization: str = "4bit"):
+        self.backend = backend
+        self.quantization = quantization
+        self.llm = SimpleLLM()
         self.language_keywords = {
             "python": ["def ", "import ", "print(", "lambda ", "#"],
             "javascript": ["function ", "console.log(", "let ", "const ", "//"],
             "bash": ["#!/bin/bash", "echo ", "$", "#"],
             "sql": ["SELECT ", "INSERT ", "UPDATE ", "DELETE ", ";"],
         }
+        # SOTA model instances
+        self.codellama = None
+        self.deepseek = None
+        if backend == "codellama" and Codellama_7BLoader:
+            self.codellama = Codellama_7BLoader()
+            self.codellama.load_model(quantization=quantization)
+        elif backend == "deepseek" and Deepseek_Coder_7BLoader:
+            self.deepseek = Deepseek_Coder_7BLoader()
+            self.deepseek.load_model(quantization=quantization)
 
     def detect_language(self, code: str) -> str:
         """
@@ -68,6 +90,17 @@ class TextToCodeEngine:
         Simple rule-based text-to-code for common tasks.
         """
         prompt = prompt.lower().strip()
+        
+        # Self-modification and identity update rules
+        if any(keyword in prompt for keyword in ["update identity", "modify identity", "change identity", "edit soul"]):
+            return self._generate_identity_update_code(prompt)
+        
+        if any(keyword in prompt for keyword in ["update version", "upgrade version", "bump version"]):
+            return self._generate_version_update_code(prompt)
+        
+        if any(keyword in prompt for keyword in ["add trait", "modify trait", "change personality"]):
+            return self._generate_trait_update_code(prompt)
+        
         # Example rules
         if "hello world" in prompt:
             if "python" in prompt:
@@ -99,27 +132,182 @@ class TextToCodeEngine:
             )
         # Add more rules as needed
         return None
+    
+    def _generate_identity_update_code(self, prompt: str) -> str:
+        """Generate code for identity updates."""
+        return '''import json
+import os
+from pathlib import Path
 
-    def generate_code(self, prompt: str, language: str = "python") -> Dict[str, Any]:
+def update_daemon_identity(user_id: str, updates: dict):
+    """
+    Update the daemon identity for a specific user.
+    
+    Args:
+        user_id: The user ID to update
+        updates: Dictionary of identity fields to update
+    """
+    # Path to the soul profile
+    profile_path = Path(f"unimind/soul/soul_profiles/{user_id}.json")
+    
+    if not profile_path.exists():
+        print(f"Profile not found: {profile_path}")
+        return False
+    
+    try:
+        # Load current profile
+        with open(profile_path, 'r') as f:
+            profile_data = json.load(f)
+        
+        # Update daemon identity
+        if "daemon_identity" in profile_data:
+            profile_data["daemon_identity"].update(updates)
+        else:
+            profile_data["daemon_identity"] = updates
+        
+        # Save updated profile
+        with open(profile_path, 'w') as f:
+            json.dump(profile_data, f, indent=2)
+        
+        print(f"✅ Identity updated for user: {user_id}")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Error updating identity: {e}")
+        return False
+
+# Example usage:
+# updates = {"version": "1.0.0", "description": "Updated description"}
+# update_daemon_identity("malittlevina", updates)
+'''
+    
+    def _generate_version_update_code(self, prompt: str) -> str:
+        """Generate code for version updates."""
+        return '''import json
+import os
+from pathlib import Path
+
+def update_daemon_version(user_id: str, new_version: str):
+    """
+    Update the daemon version for a specific user.
+    
+    Args:
+        user_id: The user ID to update
+        new_version: New version string (e.g., "1.0.0")
+    """
+    profile_path = Path(f"unimind/soul/soul_profiles/{user_id}.json")
+    
+    if not profile_path.exists():
+        print(f"Profile not found: {profile_path}")
+        return False
+    
+    try:
+        # Load current profile
+        with open(profile_path, 'r') as f:
+            profile_data = json.load(f)
+        
+        # Update version
+        if "daemon_identity" in profile_data:
+            profile_data["daemon_identity"]["version"] = new_version
+        else:
+            profile_data["daemon_identity"] = {"version": new_version}
+        
+        # Save updated profile
+        with open(profile_path, 'w') as f:
+            json.dump(profile_data, f, indent=2)
+        
+        print(f"✅ Version updated to {new_version} for user: {user_id}")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Error updating version: {e}")
+        return False
+
+# Example usage:
+# update_daemon_version("malittlevina", "1.0.0")
+'''
+    
+    def _generate_trait_update_code(self, prompt: str) -> str:
+        """Generate code for trait updates."""
+        return '''import json
+import os
+from pathlib import Path
+
+def update_daemon_traits(user_id: str, new_traits: list):
+    """
+    Update the daemon personality traits for a specific user.
+    
+    Args:
+        user_id: The user ID to update
+        new_traits: List of new personality traits
+    """
+    profile_path = Path(f"unimind/soul/soul_profiles/{user_id}.json")
+    
+    if not profile_path.exists():
+        print(f"Profile not found: {profile_path}")
+        return False
+    
+    try:
+        # Load current profile
+        with open(profile_path, 'r') as f:
+            profile_data = json.load(f)
+        
+        # Update personality traits
+        if "daemon_identity" in profile_data:
+            profile_data["daemon_identity"]["personality_traits"] = new_traits
+        else:
+            profile_data["daemon_identity"] = {"personality_traits": new_traits}
+        
+        # Save updated profile
+        with open(profile_path, 'w') as f:
+            json.dump(profile_data, f, indent=2)
+        
+        print(f"✅ Traits updated for user: {user_id}")
+        print(f"New traits: {', '.join(new_traits)}")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Error updating traits: {e}")
+        return False
+
+# Example usage:
+# new_traits = ["wise and knowledgeable", "innovative and creative", "protective and ethical"]
+# update_daemon_traits("malittlevina", new_traits)
+'''
+
+    def generate_code(self, prompt: str, language: str = "python", backend: Optional[str] = None, max_length: int = 512) -> Dict[str, Any]:
         """
-        Main entry: Generate code from a natural language prompt.
-        Tries rule-based first, then LLM if available.
-        Returns a dict with code, language, and metadata.
+        Generate code from a natural language prompt using the selected backend.
         """
-        # Try rule-based
-        code = self.rule_based_generation(prompt)
-        used_llm = False
-        if not code and self.llm:
-            code = self.llm_generate_code(prompt, language)
-            used_llm = True
-        if not code:
-            code = f"# Unable to generate code for: {prompt}"
-        formatted = self.format_code(code, language)
+        backend = backend or self.backend
+        code = None
+        used_backend = backend
+        error = None
+        # SOTA: CodeLlama
+        if backend == "codellama" and self.codellama:
+            code = self.codellama.generate(prompt, max_length=max_length)
+            if code is None:
+                error = "CodeLlama generation failed."
+        # SOTA: DeepSeek Coder
+        elif backend == "deepseek" and self.deepseek:
+            code = self.deepseek.generate(prompt, max_length=max_length)
+            if code is None:
+                error = "DeepSeek Coder generation failed."
+        # Rule-based
+        elif backend == "rule-based":
+            code = self.rule_based_generation(prompt)
+            if code is None:
+                error = "No rule-based match."
+        # SimpleLLM fallback
+        else:
+            code = self.llm.generate_code(prompt, language=language)
+            used_backend = "simplellm"
+            if code is None:
+                error = "SimpleLLM generation failed."
         return {
-            "code": formatted,
-            "language": language,
-            "used_llm": used_llm,
-            "valid_syntax": self.validate_python_syntax(formatted) if language == "python" else None
+            "code": code,
+            "backend": used_backend,
+            "error": error
         }
 
     def llm_generate_code(self, prompt: str, language: str = "python") -> Optional[str]:
@@ -149,8 +337,19 @@ class TextToCodeEngine:
 # Module-level engine instance for convenience
 engine = TextToCodeEngine()
 
-def text_to_code(prompt: str, language: str = "python") -> Dict[str, Any]:
+# Export the engine instance with the expected name
+text_to_code_engine = engine
+
+def text_to_code(prompt: str, language: str = "python", backend: str = "rule-based", max_length: int = 512) -> Dict[str, Any]:
     """
-    Generate code from text using the module-level engine.
+    Module-level function for unified text-to-code generation.
+    Args:
+        prompt: Natural language prompt
+        language: Target programming language
+        backend: 'rule-based', 'simplellm', 'codellama', 'deepseek'
+        max_length: Max tokens for SOTA models
+    Returns:
+        Dict with 'code', 'backend', and 'error' (if any)
     """
-    return engine.generate_code(prompt, language)
+    engine = TextToCodeEngine(backend=backend)
+    return engine.generate_code(prompt, language=language, backend=backend, max_length=max_length)

@@ -360,6 +360,9 @@ class TextToText:
 # Module-level instance
 text_to_text = TextToText()
 
+# Export the engine instance with the expected name
+text_to_text_engine = text_to_text
+
 def transform_text(input_text: str, transformation_type: str = "default", style: TextStyle = TextStyle.FORMAL) -> TransformationResult:
     """Transform text using the module-level instance."""
     return text_to_text.transform_text(input_text, transformation_type, style)

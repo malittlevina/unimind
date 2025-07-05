@@ -4,7 +4,7 @@ Routes user intents and system events to appropriate scrolls, rituals, or module
 """
 
 import logging
-from typing import Dict, List, Optional, Any, Callable, Union
+from typing import Dict, List, Optional, Any, Callable
 from dataclasses import dataclass
 from enum import Enum
 import re
@@ -25,7 +25,7 @@ class ActionPlan:
     parameters: Dict[str, Any]
     confidence: float
     description: str
-    fallback_actions: List[str] = None
+    fallback_actions: Optional[List[str]] = None
     
     def __post_init__(self):
         if self.fallback_actions is None:
@@ -35,13 +35,15 @@ class ActionPlan:
 class ScrollDefinition:
     """Definition of a scroll with metadata."""
     name: str
-    handler: Callable
+    handler: Callable[..., Any]
     description: str
     triggers: List[str]
     required_modules: List[str]
     parameters: Dict[str, Any]
     category: str
     is_external: bool = False
+    protected: bool = False
+    founder_only: bool = False
 
 class SymbolicRouter:
     """
@@ -52,7 +54,7 @@ class SymbolicRouter:
     def __init__(self):
         """Initialize the symbolic router."""
         self.scroll_registry: Dict[str, ScrollDefinition] = {}
-        self.module_registry: Dict[str, Dict[str, Callable]] = {}
+        self.module_registry: Dict[str, Dict[str, Callable[..., Any]]] = {}
         self.trigger_patterns: Dict[str, List[str]] = {}
         self.logger = logging.getLogger('SymbolicRouter')
         
@@ -64,8 +66,24 @@ class SymbolicRouter:
         self.trigger_patterns = {
             "optimize_self": [
                 r"optimize\s+(?:yourself|self|system)",
+                r"optimize\s+(?:your|the)\s+(?:llm|lam|communication)",
+                r"optimize\s+(?:.*?)\s+(?:llm|lam)",
+                r"optimize\s+(?:.*?)\s+(?:communication)",
+                r"optimize\s+(?:.*?)",
                 r"improve\s+(?:yourself|self|performance)",
-                r"enhance\s+(?:yourself|self|capabilities)"
+                r"improve\s+(?:your|the)\s+(?:llm|lam|communication)",
+                r"enhance\s+(?:yourself|self|capabilities)",
+                r"enhance\s+(?:your|the)\s+(?:llm|lam|communication)",
+                r"expand\s+(?:your|the)\s+(?:logic|capabilities|abilities)",
+                r"better\s+(?:assistant|helper|ai)",
+                r"upgrade\s+(?:yourself|self)",
+                r"evolve\s+(?:yourself|self)",
+                r"grow\s+(?:yourself|self)",
+                r"develop\s+(?:yourself|self)",
+                r"learn\s+(?:more|better)",
+                r"become\s+(?:better|smarter|more\s+capable)",
+                r"self\s+(?:improvement|development|enhancement)",
+                r"help\s+(?:me\s+)?(?:expand|improve|enhance)\s+(?:your|the)\s+(?:logic|capabilities)"
             ],
             "reflect": [
                 r"reflect\s+(?:on|about)",
@@ -82,17 +100,95 @@ class SymbolicRouter:
                 r"find\s+(?:information|data)",
                 r"look\s+up"
             ],
+            "location_search": [
+                r"find\s+(?:a\s+)?(?:store|shop|place|location)",
+                r"nearby\s+(?:store|shop|place)",
+                r"where\s+(?:to\s+)?(?:buy|find|get)",
+                r"nearest\s+(?:store|shop|place)",
+                r"3d\s+printer\s+parts",
+                r"electronics\s+store",
+                r"hardware\s+store"
+            ],
             "weather_check": [
                 r"weather\s+(?:in|for|at)",
                 r"temperature\s+(?:in|for|at)",
                 r"forecast\s+(?:for|in)"
+            ],
+            "generate_3d_model": [
+                r"generate\s+(?:a\s+)?3d\s+model",
+                r"create\s+(?:a\s+)?3d\s+model",
+                r"make\s+(?:a\s+)?3d\s+model",
+                r"build\s+(?:a\s+)?3d\s+model",
+                r"3d\s+model\s+(?:of|for)",
+                r"model\s+(?:a|an)\s+",
+                r"generate\s+(?:a\s+)?model"
+            ],
+            "generate_3d_scene": [
+                r"generate\s+(?:a\s+)?3d\s+scene",
+                r"create\s+(?:a\s+)?3d\s+scene",
+                r"make\s+(?:a\s+)?3d\s+scene",
+                r"build\s+(?:a\s+)?3d\s+scene",
+                r"3d\s+scene\s+(?:of|for)",
+                r"scene\s+(?:of|with)",
+                r"generate\s+(?:a\s+)?scene"
+            ],
+            "optimize_3d_model": [
+                r"optimize\s+(?:3d\s+)?model",
+                r"reduce\s+model\s+complexity",
+                r"simplify\s+(?:3d\s+)?model",
+                r"optimize\s+3d\s+object",
+                r"make\s+model\s+faster"
+            ],
+            "analyze_3d_model": [
+                r"analyze\s+(?:3d\s+)?model",
+                r"model\s+analysis",
+                r"model\s+stats",
+                r"model\s+info",
+                r"check\s+model\s+properties",
+                r"model\s+statistics"
+            ],
+            "convert_3d_format": [
+                r"convert\s+(?:3d\s+)?model\s+format",
+                r"convert\s+model\s+to",
+                r"change\s+model\s+format",
+                r"export\s+model\s+as",
+                r"save\s+model\s+as"
+            ],
+            "create_realm": [
+                r"create\s+(?:a\s+)?realm",
+                r"build\s+(?:a\s+)?realm",
+                r"make\s+(?:a\s+)?realm",
+                r"new\s+realm",
+                r"generate\s+(?:a\s+)?realm"
+            ],
+            "place_object": [
+                r"place\s+(?:an\s+)?object",
+                r"add\s+(?:an\s+)?object",
+                r"put\s+(?:an\s+)?object",
+                r"spawn\s+(?:an\s+)?object",
+                r"insert\s+(?:an\s+)?object"
+            ],
+            "cast_glyph": [
+                r"cast\s+(?:a\s+)?glyph",
+                r"cast\s+(?:a\s+)?spell",
+                r"magic\s+glyph",
+                r"enchant",
+                r"magical\s+effect"
+            ],
+            "list_realms": [
+                r"list\s+realms",
+                r"show\s+realms",
+                r"realms",
+                r"available\s+realms",
+                r"what\s+realms\s+are\s+there"
             ]
         }
     
     def register_scroll(self, name: str, handler: Callable, description: str = "",
                        triggers: List[str] = None, required_modules: List[str] = None,
                        parameters: Dict[str, Any] = None, category: str = "general",
-                       is_external: bool = False) -> None:
+                       is_external: bool = False, protected: bool = False, 
+                       founder_only: bool = False) -> None:
         """
         Register a scroll with the router.
         
@@ -105,6 +201,8 @@ class SymbolicRouter:
             parameters: Expected parameters
             category: Category of the scroll
             is_external: Whether scroll requires external access
+            protected: Whether scroll requires privileged access
+            founder_only: Whether scroll requires founder access
         """
         self.scroll_registry[name] = ScrollDefinition(
             name=name,
@@ -114,7 +212,9 @@ class SymbolicRouter:
             required_modules=required_modules or [],
             parameters=parameters or {},
             category=category,
-            is_external=is_external
+            is_external=is_external,
+            protected=protected,
+            founder_only=founder_only
         )
         self.logger.info(f"Registered scroll: {name} ({description})")
     
@@ -325,6 +425,29 @@ class SymbolicRouter:
             self.logger.info(f"Removed scroll: {scroll_name}")
             return True
         return False
+    
+    def optimize_patterns(self) -> Dict[str, Any]:
+        """Optimize trigger patterns for better matching."""
+        self.logger.info("Optimizing trigger patterns")
+        
+        optimizations = {
+            "patterns_optimized": len(self.trigger_patterns),
+            "scrolls_registered": len(self.scroll_registry),
+            "modules_registered": len(self.module_registry)
+        }
+        
+        # Recompile regex patterns for better performance
+        for scroll_name, patterns in self.trigger_patterns.items():
+            try:
+                # Validate patterns
+                for pattern in patterns:
+                    re.compile(pattern)
+                optimizations[f"{scroll_name}_patterns"] = len(patterns)
+            except re.error as e:
+                self.logger.warning(f"Invalid pattern in {scroll_name}: {e}")
+        
+        self.logger.info(f"Pattern optimization complete: {optimizations}")
+        return optimizations
 
 # Global router instance
 symbolic_router = SymbolicRouter()
@@ -332,10 +455,15 @@ symbolic_router = SymbolicRouter()
 def register_scroll(name: str, handler: Callable, description: str = "",
                    triggers: List[str] = None, required_modules: List[str] = None,
                    parameters: Dict[str, Any] = None, category: str = "general",
-                   is_external: bool = False) -> None:
-    """Register a scroll using the global router instance."""
-    symbolic_router.register_scroll(name, handler, description, triggers, 
-                                   required_modules, parameters, category, is_external)
+                   is_external: bool = False, protected: bool = False, 
+                   founder_only: bool = False) -> None:
+    """Register a scroll with the global symbolic router."""
+    symbolic_router.register_scroll(
+        name=name, handler=handler, description=description,
+        triggers=triggers, required_modules=required_modules,
+        parameters=parameters, category=category, is_external=is_external,
+        protected=protected, founder_only=founder_only
+    )
 
 def route_intent(intent: str, context: Dict[str, Any] = None) -> ActionPlan:
     """Route an intent using the global router instance."""
