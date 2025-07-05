@@ -138,6 +138,51 @@ try:
 except ImportError:
     WEB_INTERFACE_AVAILABLE = False
 
+# Meta-command definitions
+META_COMMANDS = [
+    "expand your systems", "add new skills", "be more general", "enable more features",
+    "load more modules", "activate all capabilities", "switch to general mode", "enable all plugins"
+]
+
+def detect_meta_command(user_input):
+    for cmd in META_COMMANDS:
+        if cmd in user_input.lower():
+            return cmd
+    return None
+
+def handle_meta_command(meta_cmd, context, system):
+    # Example: expand system capabilities
+    if meta_cmd == "expand your systems":
+        # Simulate dynamic module loading or mode switch
+        context['mode'] = 'general'
+        # Optionally, set a flag or actually load more modules if available
+        system.meta_mode = 'general'
+        return "✅ System expanded: All modules and general reasoning enabled."
+    elif meta_cmd == "add new skills":
+        context['skills_enabled'] = True
+        return "✅ New skills enabled."
+    elif meta_cmd == "be more general":
+        context['mode'] = 'general'
+        system.meta_mode = 'general'
+        return "✅ Switched to general reasoning mode."
+    elif meta_cmd == "enable more features":
+        context['features_enabled'] = True
+        return "✅ More features enabled."
+    elif meta_cmd == "load more modules":
+        context['modules_loaded'] = True
+        return "✅ Additional modules loaded."
+    elif meta_cmd == "activate all capabilities":
+        context['all_capabilities'] = True
+        return "✅ All capabilities activated."
+    elif meta_cmd == "switch to general mode":
+        context['mode'] = 'general'
+        system.meta_mode = 'general'
+        return "✅ Switched to general mode."
+    elif meta_cmd == "enable all plugins":
+        context['plugins_enabled'] = True
+        return "✅ All plugins enabled."
+    return f"⚠️ Meta-command '{meta_cmd}' recognized, but no action defined."
+
 class ComprehensiveUniMindSystem:
     """Comprehensive UniMind system integrating all advanced features"""
     

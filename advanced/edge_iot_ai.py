@@ -41,6 +41,79 @@ try:
 except ImportError:
     SKLEARN_AVAILABLE = False
 
+# Advanced IoT and edge computing libraries
+try:
+    import cv2
+    OPENCV_AVAILABLE = True
+except ImportError:
+    OPENCV_AVAILABLE = False
+
+try:
+    import tensorflow as tf
+    import tensorflow_lite as tflite
+    TENSORFLOW_AVAILABLE = True
+except ImportError:
+    TENSORFLOW_AVAILABLE = False
+
+try:
+    import torch
+    import torch.nn as nn
+    PYTORCH_AVAILABLE = True
+except ImportError:
+    PYTORCH_AVAILABLE = False
+
+try:
+    import redis
+    REDIS_AVAILABLE = True
+except ImportError:
+    REDIS_AVAILABLE = False
+
+try:
+    import kubernetes
+    KUBERNETES_AVAILABLE = True
+except ImportError:
+    KUBERNETES_AVAILABLE = False
+
+try:
+    import docker
+    DOCKER_AVAILABLE = True
+except ImportError:
+    DOCKER_AVAILABLE = False
+
+# 5G and networking
+try:
+    import scapy
+    SCAPY_AVAILABLE = True
+except ImportError:
+    SCAPY_AVAILABLE = False
+
+try:
+    import netifaces
+    NETIFACES_AVAILABLE = True
+except ImportError:
+    NETIFACES_AVAILABLE = False
+
+# Time series and streaming
+try:
+    import influxdb
+    INFLUXDB_AVAILABLE = True
+except ImportError:
+    INFLUXDB_AVAILABLE = False
+
+try:
+    import kafka
+    KAFKA_AVAILABLE = True
+except ImportError:
+    KAFKA_AVAILABLE = False
+
+# Visualization
+try:
+    import plotly.graph_objects as go
+    import plotly.express as px
+    PLOTLY_AVAILABLE = True
+except ImportError:
+    PLOTLY_AVAILABLE = False
+
 
 class DeviceType(Enum):
     """Types of IoT devices."""
@@ -175,6 +248,100 @@ class RealTimeStream:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
+@dataclass
+class EdgeAI:
+    """Edge AI model and inference."""
+    ai_id: str
+    model_type: str  # "computer_vision", "nlp", "anomaly_detection", "prediction"
+    model_framework: str  # "tensorflow", "pytorch", "onnx", "tflite"
+    model_size: int  # MB
+    inference_latency: float  # ms
+    accuracy: float
+    quantization_level: str  # "fp32", "fp16", "int8"
+    deployment_status: str  # "deployed", "training", "evaluating"
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class FiveGNetwork:
+    """5G network configuration."""
+    network_id: str
+    network_type: str  # "sa", "nsa", "standalone", "non_standalone"
+    frequency_band: str  # "sub6", "mmwave"
+    bandwidth: float  # MHz
+    latency: float  # ms
+    throughput: float  # Mbps
+    coverage_area: Dict[str, Any]
+    network_slices: List[Dict[str, Any]]
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class DistributedComputing:
+    """Distributed computing cluster."""
+    cluster_id: str
+    cluster_type: str  # "kubernetes", "docker_swarm", "mesos"
+    nodes: List[str]
+    resource_allocation: Dict[str, Any]
+    load_balancing: Dict[str, Any]
+    fault_tolerance: Dict[str, Any]
+    scaling_policies: Dict[str, Any]
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class EdgeAnalytics:
+    """Advanced edge analytics."""
+    analytics_id: str
+    analytics_type: str  # "real_time", "batch", "streaming", "predictive"
+    data_sources: List[str]
+    processing_engine: str  # "spark", "flink", "kafka_streams"
+    algorithms: List[str]
+    visualization_config: Dict[str, Any]
+    alerting_rules: List[Dict[str, Any]]
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class IoTGateway:
+    """Advanced IoT gateway."""
+    gateway_id: str
+    gateway_type: str  # "edge_gateway", "fog_gateway", "cloud_gateway"
+    supported_protocols: List[CommunicationProtocol]
+    processing_capabilities: List[str]
+    security_features: List[str]
+    connectivity_options: List[str]
+    power_management: Dict[str, Any]
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class TimeSeriesData:
+    """Time series data storage."""
+    series_id: str
+    data_source: str
+    metric_name: str
+    tags: Dict[str, str]
+    retention_policy: Dict[str, Any]
+    aggregation_rules: List[Dict[str, Any]]
+    compression_algorithm: str
+    query_performance: Dict[str, float]
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class EdgeSecurity:
+    """Edge security and privacy."""
+    security_id: str
+    security_layer: str  # "device", "network", "application", "data"
+    security_mechanisms: List[str]
+    encryption_methods: List[str]
+    authentication_protocols: List[str]
+    threat_detection: Dict[str, Any]
+    compliance_frameworks: List[str]
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
 class EdgeIoTAIEngine:
     """
     Advanced edge computing and IoT AI engine for UniMind.
@@ -195,25 +362,53 @@ class EdgeIoTAIEngine:
         self.iot_networks: Dict[str, IoTNetwork] = {}
         self.real_time_streams: Dict[str, RealTimeStream] = {}
         
+        # Advanced IoT data structures
+        self.edge_ai_models: Dict[str, EdgeAI] = {}
+        self.fiveg_networks: Dict[str, FiveGNetwork] = {}
+        self.distributed_clusters: Dict[str, DistributedComputing] = {}
+        self.edge_analytics: Dict[str, EdgeAnalytics] = {}
+        self.iot_gateways: Dict[str, IoTGateway] = {}
+        self.time_series_data: Dict[str, TimeSeriesData] = {}
+        self.edge_security: Dict[str, EdgeSecurity] = {}
+        
         # Communication clients
         self.mqtt_client: Optional[mqtt.Client] = None
         self.websocket_clients: Dict[str, Any] = {}
         
-        # Processing pipelines
-        self.data_processors: Dict[str, Any] = {}
-        self.ml_models: Dict[str, Any] = {}
-        self.analytics_engines: Dict[str, Any] = {}
+        # Advanced communication systems
+        self.kafka_producers: Dict[str, Any] = {}
+        self.kafka_consumers: Dict[str, Any] = {}
+        self.redis_client: Optional[Any] = None
+        self.influxdb_client: Optional[Any] = None
+        
+        # Edge computing systems
+        self.kubernetes_client: Optional[Any] = None
+        self.docker_client: Optional[Any] = None
+        self.edge_orchestrator: Dict[str, Any] = {}
+        
+        # AI and ML systems
+        self.tensorflow_models: Dict[str, Any] = {}
+        self.pytorch_models: Dict[str, Any] = {}
+        self.model_optimizer: Dict[str, Any] = {}
         
         # Performance metrics
         self.metrics = {
             'total_devices': 0,
             'total_sensor_readings': 0,
+            'total_edge_nodes': 0,
             'total_edge_tasks': 0,
             'total_networks': 0,
             'total_streams': 0,
+            'total_ai_models': 0,
+            'total_fiveg_networks': 0,
+            'total_distributed_clusters': 0,
+            'total_analytics_jobs': 0,
+            'total_gateways': 0,
+            'total_time_series': 0,
             'avg_processing_time': 0.0,
-            'avg_data_quality': 0.0,
-            'network_throughput': 0.0
+            'avg_latency': 0.0,
+            'data_throughput': 0.0,
+            'ai_inference_rate': 0.0
         }
         
         # Threading
@@ -223,14 +418,28 @@ class EdgeIoTAIEngine:
         self.mqtt_available = MQTT_AVAILABLE
         self.pandas_available = PANDAS_AVAILABLE
         self.sklearn_available = SKLEARN_AVAILABLE
+        self.opencv_available = OPENCV_AVAILABLE
+        self.tensorflow_available = TENSORFLOW_AVAILABLE
+        self.pytorch_available = PYTORCH_AVAILABLE
+        self.redis_available = REDIS_AVAILABLE
+        self.kubernetes_available = KUBERNETES_AVAILABLE
+        self.docker_available = DOCKER_AVAILABLE
+        self.scapy_available = SCAPY_AVAILABLE
+        self.netifaces_available = NETIFACES_AVAILABLE
+        self.influxdb_available = INFLUXDB_AVAILABLE
+        self.kafka_available = KAFKA_AVAILABLE
+        self.plotly_available = PLOTLY_AVAILABLE
         
         # Initialize IoT knowledge base
         self._initialize_iot_knowledge()
         
-        # Initialize communication protocols
+        # Initialize communication
         self._initialize_communication()
         
-        self.logger.info("Edge IoT AI engine initialized")
+        # Initialize advanced features
+        self._initialize_advanced_features()
+        
+        self.logger.info("Edge IoT AI engine initialized with advanced features")
     
     def _initialize_iot_knowledge(self):
         """Initialize IoT knowledge base."""
@@ -775,6 +984,161 @@ class EdgeIoTAIEngine:
                 'pandas_available': self.pandas_available,
                 'sklearn_available': self.sklearn_available
             }
+
+    def _initialize_advanced_features(self):
+        """Initialize advanced edge IoT features."""
+        # Edge AI model configurations
+        self.edge_ai_config = {
+            'computer_vision': {
+                'frameworks': ['tensorflow_lite', 'onnx', 'openvino'],
+                'optimization': ['quantization', 'pruning', 'knowledge_distillation'],
+                'deployment': ['docker', 'kubernetes', 'edge_runtime']
+            },
+            'nlp': {
+                'frameworks': ['tensorflow_lite', 'pytorch_mobile', 'onnx'],
+                'optimization': ['quantization', 'model_compression'],
+                'deployment': ['edge_gateway', 'mobile_device']
+            },
+            'anomaly_detection': {
+                'frameworks': ['tensorflow_lite', 'scikit_learn'],
+                'algorithms': ['isolation_forest', 'autoencoder', 'lstm'],
+                'deployment': ['edge_node', 'gateway']
+            }
+        }
+        
+        # 5G network configurations
+        self.fiveg_config = {
+            'network_slices': {
+                'embb': {  # Enhanced Mobile Broadband
+                    'bandwidth': 1000,  # Mbps
+                    'latency': 10,  # ms
+                    'applications': ['video_streaming', 'vr_ar']
+                },
+                'urllc': {  # Ultra-Reliable Low-Latency Communications
+                    'bandwidth': 100,  # Mbps
+                    'latency': 1,  # ms
+                    'applications': ['autonomous_vehicles', 'industrial_automation']
+                },
+                'mmtc': {  # Massive Machine-Type Communications
+                    'bandwidth': 10,  # Mbps
+                    'latency': 100,  # ms
+                    'applications': ['iot_sensors', 'smart_cities']
+                }
+            },
+            'frequency_bands': {
+                'sub6': {
+                    'range': '3.3-4.2 GHz',
+                    'coverage': 'wide',
+                    'penetration': 'good'
+                },
+                'mmwave': {
+                    'range': '24-100 GHz',
+                    'coverage': 'limited',
+                    'penetration': 'poor'
+                }
+            }
+        }
+        
+        # Distributed computing configurations
+        self.distributed_config = {
+            'kubernetes': {
+                'orchestration': 'kubernetes',
+                'container_runtime': 'containerd',
+                'networking': 'calico',
+                'storage': 'ceph'
+            },
+            'docker_swarm': {
+                'orchestration': 'docker_swarm',
+                'container_runtime': 'docker',
+                'networking': 'overlay',
+                'storage': 'local'
+            },
+            'mesos': {
+                'orchestration': 'apache_mesos',
+                'container_runtime': 'docker',
+                'networking': 'ip_per_container',
+                'storage': 'distributed'
+            }
+        }
+        
+        # Edge analytics configurations
+        self.edge_analytics_config = {
+            'real_time': {
+                'engine': 'kafka_streams',
+                'processing': 'streaming',
+                'latency': 'sub_second',
+                'applications': ['anomaly_detection', 'real_time_dashboards']
+            },
+            'batch': {
+                'engine': 'apache_spark',
+                'processing': 'batch',
+                'latency': 'minutes_to_hours',
+                'applications': ['historical_analysis', 'ml_training']
+            },
+            'streaming': {
+                'engine': 'apache_flink',
+                'processing': 'streaming',
+                'latency': 'seconds_to_minutes',
+                'applications': ['complex_event_processing', 'real_time_analytics']
+            }
+        }
+        
+        # IoT gateway configurations
+        self.gateway_config = {
+            'edge_gateway': {
+                'processing': 'edge_computing',
+                'storage': 'local_storage',
+                'connectivity': ['wifi', 'ethernet', 'cellular'],
+                'power': 'ac_powered'
+            },
+            'fog_gateway': {
+                'processing': 'fog_computing',
+                'storage': 'distributed_storage',
+                'connectivity': ['ethernet', 'fiber', 'cellular'],
+                'power': 'ac_powered'
+            },
+            'cloud_gateway': {
+                'processing': 'cloud_computing',
+                'storage': 'cloud_storage',
+                'connectivity': ['internet', 'vpn', 'dedicated_line'],
+                'power': 'data_center'
+            }
+        }
+        
+        # Time series data configurations
+        self.timeseries_config = {
+            'retention_policies': {
+                'hot_data': {'duration': '7_days', 'compression': 'none'},
+                'warm_data': {'duration': '30_days', 'compression': 'gzip'},
+                'cold_data': {'duration': '1_year', 'compression': 'lz4'}
+            },
+            'aggregation_rules': {
+                'minute': {'interval': '1m', 'functions': ['avg', 'min', 'max']},
+                'hour': {'interval': '1h', 'functions': ['avg', 'sum', 'count']},
+                'day': {'interval': '1d', 'functions': ['avg', 'sum', 'count']}
+            }
+        }
+        
+        # Edge security configurations
+        self.edge_security_config = {
+            'device_security': {
+                'authentication': ['certificate_based', 'token_based'],
+                'encryption': ['aes_256', 'tls_1_3'],
+                'integrity': ['digital_signatures', 'checksums']
+            },
+            'network_security': {
+                'authentication': ['mutual_tls', 'oauth2'],
+                'encryption': ['ipsec', 'vpn'],
+                'monitoring': ['intrusion_detection', 'traffic_analysis']
+            },
+            'data_security': {
+                'encryption': ['at_rest', 'in_transit', 'in_use'],
+                'access_control': ['rbac', 'abac'],
+                'privacy': ['data_masking', 'anonymization']
+            }
+        }
+        
+        self.logger.info("Advanced edge IoT features initialized")
 
 
 # Global instance

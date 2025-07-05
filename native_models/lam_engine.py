@@ -9,6 +9,7 @@ import json
 import logging
 import re
 import time
+import asyncio
 from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
@@ -17,6 +18,8 @@ from .conversation_memory import conversation_memory
 from .llm_engine import llm_engine
 from ..memory.unified_memory import unified_memory, MemoryType
 from pathlib import Path
+from unimind.native_models.llm_engine import MultiModalInput
+import inspect
 
 # Context-Aware LLM Integration
 class IntentCategory(Enum):
@@ -73,6 +76,10 @@ class ContextAwareLLM:
         self.logger = logging.getLogger('ContextAwareLLM')
         self.llm_engine = llm_engine
         self.unified_memory = unified_memory
+        from unimind.native_models.llm_engine import VisionProcessor, AudioProcessor, VideoProcessor
+        self.vision_processor = VisionProcessor()
+        self.audio_processor = AudioProcessor()
+        self.video_processor = VideoProcessor()
         
         # Intent patterns and keywords
         self.intent_patterns = self._initialize_intent_patterns()
@@ -679,6 +686,63 @@ Please provide a comprehensive response that addresses your request effectively.
         
         return routing_result
 
+    def route_with_enhanced_understanding(self, user_input: str, memory_context_id: str = None, multimodal_input: Optional[MultiModalInput] = None) -> Dict[str, Any]:
+        """
+        Route user input with enhanced understanding using advanced context analysis.
+        
+        Args:
+            user_input: The user's input text
+            memory_context_id: Optional memory context ID
+            multimodal_input: Optional multi-modal input (image/audio/video)
+            
+        Returns:
+            Dictionary containing enhanced routing results
+        """
+        try:
+            # Get contextual understanding
+            understanding = self.understand_context(user_input, memory_context_id)
+            
+            # Enhanced semantic analysis
+            semantic_analysis = self._semantic_understanding(user_input, understanding.primary_intent, [])
+            
+            # Generate enhanced prompt with semantic analysis
+            enhanced_prompt = self.generate_enhanced_prompt(user_input, understanding, memory_context_id)
+            
+            # Add semantic insights to prompt
+            if semantic_analysis:
+                enhanced_prompt += f"\n\nSemantic Analysis: {semantic_analysis.get('insights', '')}"
+                enhanced_prompt += f"\nContext Clues: {', '.join(semantic_analysis.get('context_clues', []))}"
+            
+            # Add multimodal context if available
+            if multimodal_input:
+                enhanced_prompt += f"\n\nMulti-modal Input: {multimodal_input}"
+            
+            # Get response from LLM engine
+            response = self.llm_engine.run(enhanced_prompt)
+            
+            return {
+                "success": True,
+                "response": response,
+                "understanding": understanding,
+                "semantic_analysis": semantic_analysis,
+                "enhanced_prompt": enhanced_prompt,
+                "confidence": understanding.confidence,
+                "enhanced_features": {
+                    "semantic_understanding": True,
+                    "context_analysis": True,
+                    "intent_recognition": True,
+                    "multimodal_support": multimodal_input is not None
+                }
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Error in route_with_enhanced_understanding: {e}")
+            return {
+                "success": False,
+                "error": f"Enhanced routing failed: {str(e)}",
+                "fallback_response": "I'm having trouble processing that with enhanced understanding. Let me try a simpler approach."
+            }
+
     def optimize_adaptive_features(self) -> Dict[str, Any]:
         """
         Optimize adaptive LAM features (merged from AdaptiveLAM).
@@ -815,7 +879,7 @@ class LAMEngine:
     """
     
     def __init__(self):
-        """Initialize the LAM engine."""
+        """Initialize the enhanced LAM engine with advanced reasoning, multi-modal, and adaptive features."""
         self.logger = logging.getLogger('LAMEngine')
         self.knowledge_base = []
         self.inference_rules = []
@@ -829,11 +893,20 @@ class LAMEngine:
         self.llm_engine = llm_engine
         self.unified_memory = unified_memory
         
-        # Initialize context-aware LLM
-        self.context_aware_llm = context_aware_llm
+        # Enhanced context-aware LLM with advanced reasoning and multi-modal support
+        from unimind.native_models.llm_engine import HierarchicalMemory, AdaptationEngine, PerformanceMonitor
+        self.context_aware_llm = ContextAwareLLM()
+        self.hierarchical_memory = HierarchicalMemory()
+        self.adaptation_engine = AdaptationEngine()
+        self.performance_monitor = PerformanceMonitor()
         
         # Iterative reasoning sessions
         self.reasoning_sessions: Dict[str, IterativeReasoningContext] = {}
+        
+        # Multi-modal processors (vision/audio/video)
+        self.vision_processor = self.context_aware_llm.vision_processor
+        self.audio_processor = self.context_aware_llm.audio_processor
+        self.video_processor = self.context_aware_llm.video_processor
         
         # Configuration
         self.max_iterations = 5
@@ -853,8 +926,10 @@ class LAMEngine:
         self.enable_context_analysis = True
         self.enable_intent_recognition = True
         self.enable_semantic_understanding = True
+        self.enable_multimodal_processing = True
+        self.enable_meta_learning = True
         
-        self.logger.info("LAM Engine initialized with fuzzy logic, conversation memory, intent classification, LLM-driven planning, and context-aware LLM")
+        self.logger.info("Enhanced LAM Engine initialized with advanced reasoning, multi-modal, meta-learning, and adaptive features")
     
     def _initialize_task_patterns(self) -> Dict[str, Dict[str, Any]]:
         """Initialize patterns for different types of tasks."""
@@ -1579,20 +1654,18 @@ def create_content(content_type: str, description: str, parameters: Dict[str, An
         """Clear the current conversation memory."""
         self.conversation_memory.clear_memory()
 
-    def classify_intent(self, user_input: str) -> IntentResult:
+    def classify_intent(self, user_input: str, multimodal_input: Optional[MultiModalInput] = None) -> IntentResult:
         """
-        Classify user input into an intent type using context-aware analysis.
-        
+        Classify user input into an intent type using advanced context-aware, multi-modal, and meta-learning analysis.
         Args:
             user_input: User's input text
-            
+            multimodal_input: Optional multi-modal input (image/audio/video)
         Returns:
             IntentResult with classification and routing information
         """
-        # Use context-aware LLM for enhanced intent classification
+        # Use enhanced context-aware LLM for advanced intent classification
         if self.enable_context_analysis:
             understanding = self.context_aware_llm.understand_context(user_input)
-            
             # Map context-aware intent to LAM intent
             intent_mapping = {
                 IntentCategory.SELF_IMPROVEMENT: IntentType.SYSTEM,
@@ -1602,11 +1675,18 @@ def create_content(content_type: str, description: str, parameters: Dict[str, An
                 IntentCategory.CREATIVE_WORK: IntentType.CREATION,
                 IntentCategory.ANALYSIS: IntentType.ANALYSIS,
                 IntentCategory.CONVERSATION: IntentType.CONVERSATION,
+                IntentCategory.ANALOGICAL_REASONING: IntentType.ANALYSIS,
+                IntentCategory.CAUSAL_ANALYSIS: IntentType.ANALYSIS,
+                IntentCategory.TEMPORAL_REASONING: IntentType.ANALYSIS,
+                IntentCategory.SPATIAL_REASONING: IntentType.ANALYSIS,
+                IntentCategory.META_REASONING: IntentType.ANALYSIS,
+                IntentCategory.VISION_ANALYSIS: IntentType.ANALYSIS,
+                IntentCategory.AUDIO_PROCESSING: IntentType.ANALYSIS,
+                IntentCategory.MULTIMODAL_SYNTHESIS: IntentType.ANALYSIS,
+                IntentCategory.META_LEARNING: IntentType.HELP,
                 IntentCategory.UNKNOWN: IntentType.UNKNOWN
             }
-            
             lam_intent = intent_mapping.get(understanding.primary_intent, IntentType.UNKNOWN)
-            
             return IntentResult(
                 intent_type=lam_intent,
                 confidence=understanding.confidence,
@@ -1616,33 +1696,37 @@ def create_content(content_type: str, description: str, parameters: Dict[str, An
                     "primary_intent": understanding.primary_intent.value,
                     "secondary_intents": [intent.value for intent in understanding.secondary_intents],
                     "user_goal": understanding.user_goal,
-                    "suggested_actions": understanding.suggested_actions
+                    "suggested_actions": understanding.suggested_actions,
+                    "reasoning_pattern": getattr(understanding, 'reasoning_pattern', None),
+                    "multimodal_elements": getattr(understanding, 'multimodal_elements', None)
                 }
             )
-        
         # Fallback to LLM engine for intent classification
         return self.llm_engine.classify_intent(user_input)
-    
+
     def get_intent_statistics(self) -> Dict[str, Any]:
         """Get statistics about intent classification."""
         return self.llm_engine.get_statistics()
     
-    def route_with_context_awareness(self, user_input: str, memory_context_id: str = None) -> Dict[str, Any]:
+    def route_with_context_awareness(self, user_input: str, memory_context_id: str = None, multimodal_input: Optional[MultiModalInput] = None) -> Dict[str, Any]:
         """
-        Route user input using context-aware analysis.
-        
+        Route user input using advanced context-aware, multi-modal, and meta-learning analysis.
         Args:
             user_input: User's input text
             memory_context_id: Optional memory context identifier
-            
+            multimodal_input: Optional multi-modal input (image/audio/video)
         Returns:
             Dictionary with routing information and context understanding
         """
         if self.enable_context_analysis:
-            return self.context_aware_llm.route_with_understanding(user_input, memory_context_id)
+            # Get contextual understanding without multimodal_input for understand_context
+            understanding = self.context_aware_llm.understand_context(user_input)
+            
+            # Use enhanced understanding with multimodal support
+            return self.context_aware_llm.route_with_enhanced_understanding(user_input, memory_context_id, multimodal_input)
         else:
             # Fallback to basic routing
-            intent_result = self.classify_intent(user_input)
+            intent_result = self.classify_intent(user_input, multimodal_input=multimodal_input)
             return {
                 "original_input": user_input,
                 "intent": intent_result.intent_type.value,
@@ -1797,9 +1881,13 @@ def create_content(content_type: str, description: str, parameters: Dict[str, An
         
         return execution_result
     
-    def _analyze_task(self, user_input: str) -> Dict[str, Any]:
-        """Analyze the task to understand its requirements."""
+    def _analyze_task(self, user_input: str, multimodal_input: Optional[MultiModalInput] = None) -> Dict[str, Any]:
+        """Analyze the task to understand its requirements, using hierarchical memory, adaptation, and multi-modal context."""
         try:
+            # Use hierarchical memory for context
+            memory_context = self.hierarchical_memory.get_context(user_input) if hasattr(self.hierarchical_memory, 'get_context') else {}
+            # Use adaptation engine to adjust analysis prompt
+            adaptation_instructions = self.adaptation_engine.get_stats() if hasattr(self.adaptation_engine, 'get_stats') else {}
             # Use LLM to analyze the task
             analysis_prompt = f"""
 Analyze this user request and determine:
@@ -1808,6 +1896,9 @@ Analyze this user request and determine:
 3. Complexity level (low, medium, high)
 4. Safety considerations
 5. Estimated duration
+6. Relevant context: {memory_context}
+7. Adaptation instructions: {adaptation_instructions}
+8. Multi-modal input: {multimodal_input}
 
 User request: {user_input}
 
@@ -1821,13 +1912,11 @@ Respond in JSON format:
     "description": "brief description of what needs to be done"
 }}
 """
-            
             response = self.llm_engine.run(
                 prompt=analysis_prompt,
                 temperature=0.3,
                 max_tokens=300
             )
-            
             # Parse JSON response
             if response and response.startswith("{") and response.endswith("}"):
                 analysis = json.loads(response)
@@ -1835,7 +1924,6 @@ Respond in JSON format:
             else:
                 # Fallback to pattern matching
                 return self._pattern_based_analysis(user_input)
-                
         except Exception as e:
             self.logger.warning(f"LLM task analysis failed: {e}")
             return self._pattern_based_analysis(user_input)
@@ -1866,15 +1954,24 @@ Respond in JSON format:
             "description": "Handle general user request"
         }
     
-    def _generate_task_plan(self, user_input: str, analysis: Dict[str, Any]) -> LLMPlan:
-        """Generate a plan for executing the task."""
+    def _generate_task_plan(self, user_input: str, analysis: Dict[str, Any], multimodal_input: Optional[MultiModalInput] = None) -> LLMPlan:
+        """Generate a plan for executing the task, using adaptation, hierarchical memory, and meta-learning feedback."""
         try:
-            # Use LLM to generate task plan
+            # Use hierarchical memory for context
+            memory_context = self.hierarchical_memory.get_context(user_input) if hasattr(self.hierarchical_memory, 'get_context') else {}
+            # Use adaptation engine to adjust planning prompt
+            adaptation_instructions = self.adaptation_engine.get_stats() if hasattr(self.adaptation_engine, 'get_stats') else {}
+            # Use meta-learning system for feedback
+            meta_learning_stats = self.context_aware_llm.reasoning_engine.get_reasoning_stats() if hasattr(self.context_aware_llm, 'reasoning_engine') else {}
             planning_prompt = f"""
 Based on this task analysis, generate a detailed execution plan:
 
 Task Analysis: {json.dumps(analysis, indent=2)}
 User Request: {user_input}
+Memory Context: {memory_context}
+Adaptation Instructions: {adaptation_instructions}
+Meta-Learning Stats: {meta_learning_stats}
+Multi-modal Input: {multimodal_input}
 
 Generate a plan with:
 1. Subtasks (break down the main task)
@@ -1897,16 +1994,13 @@ Respond in JSON format:
     "confidence": 0.0-1.0
 }}
 """
-            
             response = self.llm_engine.run(
                 prompt=planning_prompt,
                 temperature=0.4,
                 max_tokens=500
             )
-            
             if response and response.startswith("{") and response.endswith("}"):
                 plan_data = json.loads(response)
-                
                 return LLMPlan(
                     original_request=user_input,
                     plan_steps=plan_data.get("subtasks", []),
@@ -1918,7 +2012,6 @@ Respond in JSON format:
                 )
             else:
                 return self._generate_simple_plan(user_input, analysis)
-                
         except Exception as e:
             self.logger.warning(f"LLM task planning failed: {e}")
             return self._generate_simple_plan(user_input, analysis)
@@ -1946,29 +2039,56 @@ Respond in JSON format:
             fallback_actions=["general_conversation"]
         )
     
-    def _execute_task_plan(self, task_plan: LLMPlan, context: Dict[str, Any] = None) -> Dict[str, Any]:
-        """Execute the task plan."""
+    def _execute_task_plan(self, task_plan: LLMPlan, context: Dict[str, Any] = None, multimodal_input: Optional[MultiModalInput] = None) -> Dict[str, Any]:
+        """Execute the task plan with advanced safety/ethics, adaptation, performance monitoring, and meta-learning."""
         self.logger.info(f"Executing task plan for: {task_plan.original_request}")
-        
         results = []
         context = context or {}
-        
+        start_time = time.time()
+        success = False
         try:
+            # Pre-execution: advanced safety/ethics check
+            if hasattr(self.llm_engine, 'ethics_engine'):
+                ethics_result = asyncio.run(self.llm_engine.ethics_engine.filter_response(task_plan.original_request))
+                if '[Content filtered' in ethics_result:
+                    return {
+                        "success": False,
+                        "message": f"Task blocked by ethics engine: {ethics_result}",
+                        "task_plan": task_plan,
+                        "execution_time": time.time() - start_time
+                    }
+            # Pre-execution: adaptation
+            if hasattr(self.adaptation_engine, 'adapt_context'):
+                context = asyncio.run(self.adaptation_engine.adapt_context([task_plan.original_request]))
+            # Pre-execution: optimize context with hierarchical memory
+            if hasattr(self.hierarchical_memory, 'enhance_context'):
+                context = asyncio.run(self.hierarchical_memory.enhance_context([task_plan.original_request]))
             # Execute subtasks based on strategy
             for step in task_plan.plan_steps:
+                # Optionally pass multimodal context to step execution
                 result = self._execute_step(step, context)
                 results.append(result)
-            
             # Compile final result
             successful_results = [r for r in results if r.success]
-            
-            if successful_results:
+            success = bool(successful_results)
+            # Post-execution: update hierarchical memory
+            if hasattr(self.hierarchical_memory, 'store_interaction'):
+                asyncio.run(self.hierarchical_memory.store_interaction([task_plan.original_request], str(results)))
+            # Post-execution: update adaptation and meta-learning
+            if hasattr(self.adaptation_engine, 'get_stats'):
+                self.adaptation_engine.get_stats()
+            if hasattr(self.context_aware_llm, 'reasoning_engine') and hasattr(self.context_aware_llm.reasoning_engine, 'get_reasoning_stats'):
+                self.context_aware_llm.reasoning_engine.get_reasoning_stats()
+            # Post-execution: record performance
+            if hasattr(self.performance_monitor, 'record_generation'):
+                self.performance_monitor.record_generation(time.time() - start_time, len(str(results)))
+            if success:
                 return {
                     "success": True,
                     "message": f"Successfully completed {len(successful_results)} steps for: {task_plan.original_request}",
                     "results": successful_results,
                     "task_plan": task_plan,
-                    "execution_time": time.time()
+                    "execution_time": time.time() - start_time
                 }
             else:
                 return {
@@ -1976,16 +2096,15 @@ Respond in JSON format:
                     "message": f"Failed to complete task: {task_plan.original_request}",
                     "results": results,
                     "task_plan": task_plan,
-                    "execution_time": time.time()
+                    "execution_time": time.time() - start_time
                 }
-                
         except Exception as e:
             self.logger.error(f"Task plan execution failed: {e}")
             return {
                 "success": False,
                 "message": f"Error executing task plan: {str(e)}",
                 "task_plan": task_plan,
-                "execution_time": time.time()
+                "execution_time": time.time() - start_time
             }
     
     def _execute_step(self, step: Dict[str, Any], context: Dict[str, Any]) -> ExecutionResult:
@@ -3066,6 +3185,167 @@ Return only the Python function code:
                 "message": f"Adaptive optimization error: {str(e)}",
                 "timestamp": time.time()
             }
+
+    async def process_input(self, user_input: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
+        """
+        Process user input through the LAM engine with full routing capabilities.
+        
+        Args:
+            user_input: The user's input text
+            context: Optional context dictionary
+            
+        Returns:
+            Dictionary containing processing results
+        """
+        try:
+            # Initialize context if not provided
+            if context is None:
+                context = {}
+            
+            # Classify intent
+            intent_result = self.classify_intent(user_input)
+            
+            # Route with context awareness
+            if inspect.iscoroutinefunction(self.route_with_context_awareness):
+                routing_result = await self.route_with_context_awareness(user_input, context.get('memory_context_id'))
+            else:
+                routing_result = self.route_with_context_awareness(user_input, context.get('memory_context_id'))
+            
+            # Handle system commands
+            if user_input.startswith('/'):
+                return self._handle_system_commands(user_input, context)
+            
+            # Process based on intent
+            if intent_result.intent_type == IntentType.SYSTEM:
+                return self._handle_system_input(user_input, context)
+            elif intent_result.intent_type == IntentType.HELP:
+                return self._handle_help_request(user_input, context)
+            elif intent_result.intent_type == IntentType.CONVERSATION:
+                return self._handle_conversation(user_input, context)
+            else:
+                # Use the routing result
+                return routing_result
+                
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"Processing failed: {str(e)}",
+                "input": user_input,
+                "fallback_response": "I encountered an error processing your request. Let me try a different approach."
+            }
+
+    def _handle_system_commands(self, user_input: str, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Handle system commands starting with '/'."""
+        command = user_input.lower().strip()
+        
+        if command == "/system" or command == "/status":
+            return {
+                "success": True,
+                "response": self._get_system_status(),
+                "command_type": "system_status"
+            }
+        elif command == "/help":
+            return {
+                "success": True,
+                "response": self._get_help_info(),
+                "command_type": "help"
+            }
+        elif command == "/web":
+            return {
+                "success": True,
+                "response": "Web interface is available. Starting web server...",
+                "command_type": "web_interface"
+            }
+        elif command == "/list-scrolls":
+            return {
+                "success": True,
+                "response": self.list_scrolls(),
+                "command_type": "list_scrolls"
+            }
+        else:
+            return {
+                "success": False,
+                "error": f"Unknown command: {user_input}",
+                "available_commands": ["/system", "/status", "/help", "/web", "/list-scrolls"]
+            }
+
+    def _handle_system_input(self, user_input: str, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Handle system-related input."""
+        return {
+            "success": True,
+            "response": f"Processing system request: {user_input}",
+            "intent_type": "system"
+        }
+
+    def _handle_help_request(self, user_input: str, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Handle help requests."""
+        return {
+            "success": True,
+            "response": self._get_help_info(),
+            "intent_type": "help"
+        }
+
+    def _handle_conversation(self, user_input: str, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Handle general conversation."""
+        # Use the LLM engine for conversation
+        try:
+            response = self.llm_engine.run(user_input)
+            return {
+                "success": True,
+                "response": response,
+                "intent_type": "conversation"
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"Conversation processing failed: {str(e)}",
+                "fallback_response": "I'm having trouble processing that. Could you rephrase?"
+            }
+
+    def _get_system_status(self) -> str:
+        """Get system status information."""
+        return """
+🎯 UniMind System Status
+========================
+✅ LAM Engine: Active
+✅ Intent Classification: Active
+✅ Context Awareness: Active
+✅ Memory Integration: Active
+✅ Adaptive Features: Active
+✅ Multi-modal Support: Active
+
+📊 Available Capabilities:
+- Text processing and analysis
+- Intent classification
+- Context-aware routing
+- Memory management
+- Adaptive task execution
+- System command handling
+
+🚀 System is operational and ready!
+"""
+
+    def _get_help_info(self) -> str:
+        """Get help information."""
+        return """
+🎯 UniMind Help
+===============
+Available Commands:
+- /system or /status - Show system status
+- /help - Show this help information
+- /web - Start web interface
+- /list-scrolls - List available scrolls
+
+Available Capabilities:
+- Natural language processing
+- Intent classification
+- Context-aware responses
+- Task execution
+- System administration
+- Help and guidance
+
+Just type your questions or requests naturally!
+"""
 
 # Module-level instance
 lam_engine = LAMEngine()

@@ -18,6 +18,10 @@ import threading
 from datetime import datetime, timedelta
 import hashlib
 import random
+import requests
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import classification_report
+from cryptography.fernet import Fernet
 
 # Healthcare dependencies
 try:
@@ -35,7 +39,7 @@ except ImportError:
 
 try:
     from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-    from sklearn.linear_model import LogisticRegression
+    from sklearn.linear_model import LogisticRegression, SGDClassifier
     from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
     from sklearn.model_selection import train_test_split
     SKLEARN_AVAILABLE = True
@@ -236,6 +240,19 @@ class HealthcareAIEngine:
         self._initialize_medical_knowledge()
         
         self.logger.info("Healthcare AI engine initialized")
+        
+        # --- Enhancement: Add advanced healthcare AI features ---
+        self.fhir_enabled = False
+        self.fhir_server_url = None
+        self.federated_learning_enabled = False
+        self.federated_model = None
+        self.explainable_ai_enabled = False
+        self.explainable_ai_method = None
+        self.iot_monitoring_enabled = False
+        self.iot_devices = {}
+        self.privacy_preserving_enabled = False
+        self.encryption_key = None
+        # --- End enhancement ---
     
     def _initialize_medical_knowledge(self):
         """Initialize medical knowledge base with common patterns."""
@@ -1023,6 +1040,143 @@ class HealthcareAIEngine:
                 'scipy_available': self.scipy_available,
                 'sklearn_available': self.sklearn_available
             }
+
+    def initialize(self):
+        """Initialize all advanced features."""
+        self._initialize_fhir()
+        self._initialize_federated_learning()
+        self._initialize_explainable_ai()
+        self._initialize_iot_monitoring()
+        self._initialize_privacy_preserving_analytics()
+
+    def _initialize_fhir(self):
+        """Initialize FHIR/EHR integration"""
+        try:
+            self.fhir_enabled = True
+            self.fhir_server_url = 'https://fhir.examplehospital.org'
+            self.logger.info("FHIR/EHR integration enabled")
+        except Exception as e:
+            self.fhir_enabled = False
+            self.logger.warning(f"FHIR initialization failed: {e}")
+
+    def _initialize_federated_learning(self):
+        """Initialize federated learning for medical models"""
+        try:
+            self.federated_learning_enabled = True
+            from sklearn.linear_model import SGDClassifier
+            self.federated_model = SGDClassifier()
+            self.logger.info("Federated learning enabled for medical models")
+        except Exception as e:
+            self.federated_learning_enabled = False
+            self.logger.warning(f"Federated learning initialization failed: {e}")
+
+    def _initialize_explainable_ai(self):
+        """Initialize explainable AI for diagnosis"""
+        try:
+            self.explainable_ai_enabled = True
+            import shap
+            self.explainable_ai_method = shap.Explainer
+            self.logger.info("Explainable AI enabled for diagnosis")
+        except Exception as e:
+            self.explainable_ai_enabled = False
+            self.logger.warning(f"Explainable AI initialization failed: {e}")
+
+    def _initialize_iot_monitoring(self):
+        """Initialize real-time patient monitoring with IoT"""
+        try:
+            self.iot_monitoring_enabled = True
+            self.iot_devices = {}
+            self.logger.info("IoT-based real-time patient monitoring enabled")
+        except Exception as e:
+            self.iot_monitoring_enabled = False
+            self.logger.warning(f"IoT monitoring initialization failed: {e}")
+
+    def _initialize_privacy_preserving_analytics(self):
+        """Initialize privacy-preserving analytics"""
+        try:
+            self.privacy_preserving_enabled = True
+            self.encryption_key = Fernet.generate_key()
+            self.logger.info("Privacy-preserving analytics enabled")
+        except Exception as e:
+            self.privacy_preserving_enabled = False
+            self.logger.warning(f"Privacy-preserving analytics initialization failed: {e}")
+
+    def fetch_fhir_patient(self, patient_id: str) -> Dict[str, Any]:
+        """Fetch patient data from FHIR server"""
+        if not self.fhir_enabled or not self.fhir_server_url:
+            self.logger.warning("FHIR not enabled")
+            return {}
+        try:
+            response = requests.get(f"{self.fhir_server_url}/Patient/{patient_id}")
+            if response.status_code == 200:
+                return response.json()
+            else:
+                self.logger.warning(f"FHIR fetch failed: {response.status_code}")
+                return {}
+        except Exception as e:
+            self.logger.error(f"FHIR fetch error: {e}")
+            return {}
+
+    def federated_model_update(self, local_data: np.ndarray, local_labels: np.ndarray):
+        """Update federated model with local data"""
+        if not self.federated_learning_enabled or self.federated_model is None:
+            self.logger.warning("Federated learning not enabled")
+            return
+        try:
+            self.federated_model.partial_fit(local_data, local_labels, classes=np.unique(local_labels))
+            self.logger.info("Federated model updated with local data")
+        except Exception as e:
+            self.logger.error(f"Federated model update failed: {e}")
+
+    def explain_diagnosis(self, features: np.ndarray, model) -> Any:
+        """Generate explainability report for a diagnosis"""
+        if not self.explainable_ai_enabled or self.explainable_ai_method is None:
+            self.logger.warning("Explainable AI not enabled")
+            return None
+        try:
+            explainer = self.explainable_ai_method(model)
+            shap_values = explainer(features)
+            self.logger.info("Generated explainability report")
+            return shap_values
+        except Exception as e:
+            self.logger.error(f"Explainable AI report failed: {e}")
+            return None
+
+    def add_iot_device(self, device_id: str, device_info: Dict[str, Any]):
+        """Register an IoT device for patient monitoring"""
+        if not self.iot_monitoring_enabled:
+            self.logger.warning("IoT monitoring not enabled")
+            return
+        self.iot_devices[device_id] = device_info
+        self.logger.info(f"IoT device {device_id} registered")
+
+    def encrypt_patient_data(self, data: bytes) -> bytes:
+        """Encrypt patient data for privacy-preserving analytics"""
+        if not self.privacy_preserving_enabled or not self.encryption_key:
+            self.logger.warning("Privacy-preserving analytics not enabled")
+            return data
+        try:
+            f = Fernet(self.encryption_key)
+            encrypted = f.encrypt(data)
+            self.logger.info("Patient data encrypted")
+            return encrypted
+        except Exception as e:
+            self.logger.error(f"Encryption failed: {e}")
+            return data
+
+    def decrypt_patient_data(self, encrypted_data: bytes) -> bytes:
+        """Decrypt patient data for analytics"""
+        if not self.privacy_preserving_enabled or not self.encryption_key:
+            self.logger.warning("Privacy-preserving analytics not enabled")
+            return encrypted_data
+        try:
+            f = Fernet(self.encryption_key)
+            decrypted = f.decrypt(encrypted_data)
+            self.logger.info("Patient data decrypted")
+            return decrypted
+        except Exception as e:
+            self.logger.error(f"Decryption failed: {e}")
+            return encrypted_data
 
 
 # Global instance

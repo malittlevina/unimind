@@ -42,6 +42,48 @@ try:
 except ImportError:
     SKLEARN_AVAILABLE = False
 
+# Advanced financial libraries
+try:
+    import yfinance as yf
+    YFINANCE_AVAILABLE = True
+except ImportError:
+    YFINANCE_AVAILABLE = False
+
+try:
+    import ccxt
+    CCXT_AVAILABLE = True
+except ImportError:
+    CCXT_AVAILABLE = False
+
+try:
+    import talib
+    TALIB_AVAILABLE = True
+except ImportError:
+    TALIB_AVAILABLE = False
+
+try:
+    import plotly.graph_objects as go
+    import plotly.express as px
+    PLOTLY_AVAILABLE = True
+except ImportError:
+    PLOTLY_AVAILABLE = False
+
+# Web3 and DeFi
+try:
+    from web3 import Web3
+    import eth_account
+    WEB3_AVAILABLE = True
+except ImportError:
+    WEB3_AVAILABLE = False
+
+# Real-time data
+try:
+    import websocket
+    import requests
+    WEBSOCKET_AVAILABLE = True
+except ImportError:
+    WEBSOCKET_AVAILABLE = False
+
 
 class AssetType(Enum):
     """Types of financial assets."""
@@ -208,6 +250,80 @@ class Transaction:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
+@dataclass
+class DeFiProtocol:
+    """DeFi protocol information."""
+    protocol_id: str
+    name: str
+    protocol_type: str  # "lending", "dex", "yield_farming", "liquidity_mining"
+    total_value_locked: float
+    apy: float
+    risk_score: float
+    smart_contract_address: str
+    blockchain: str
+    supported_tokens: List[str]
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class RealTimeMarketData:
+    """Real-time market data."""
+    data_id: str
+    asset_id: str
+    price: float
+    volume: float
+    bid: float
+    ask: float
+    high: float
+    low: float
+    change_percent: float
+    timestamp: datetime
+    source: str
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class TechnicalIndicator:
+    """Technical analysis indicator."""
+    indicator_id: str
+    asset_id: str
+    indicator_type: str  # "rsi", "macd", "bollinger_bands", "moving_average"
+    value: float
+    signal: str  # "buy", "sell", "hold"
+    confidence: float
+    timestamp: datetime
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class OptionsContract:
+    """Options contract information."""
+    contract_id: str
+    underlying_asset: str
+    contract_type: str  # "call", "put"
+    strike_price: float
+    expiration_date: datetime
+    implied_volatility: float
+    delta: float
+    gamma: float
+    theta: float
+    vega: float
+    current_price: float
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class CryptoWallet:
+    """Cryptocurrency wallet."""
+    wallet_id: str
+    address: str
+    blockchain: str
+    balance: Dict[str, float]  # token: amount
+    transactions: List[str]
+    security_score: float
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
 class FinancialAIEngine:
     """
     Advanced financial AI engine for UniMind.
@@ -230,10 +346,27 @@ class FinancialAIEngine:
         self.financial_forecasts: Dict[str, FinancialForecast] = {}
         self.transactions: Dict[str, Transaction] = {}
         
+        # Advanced data structures
+        self.defi_protocols: Dict[str, DeFiProtocol] = {}
+        self.real_time_data: Dict[str, RealTimeMarketData] = {}
+        self.technical_indicators: Dict[str, TechnicalIndicator] = {}
+        self.options_contracts: Dict[str, OptionsContract] = {}
+        self.crypto_wallets: Dict[str, CryptoWallet] = {}
+        
         # Trading algorithms
         self.trading_algorithms: Dict[str, Any] = {}
         self.risk_models: Dict[str, Any] = {}
         self.fraud_models: Dict[str, Any] = {}
+        
+        # Real-time data streams
+        self.market_data_streams: Dict[str, Any] = {}
+        self.websocket_connections: Dict[str, Any] = {}
+        self.data_feed_threads: Dict[str, threading.Thread] = {}
+        
+        # DeFi integration
+        self.web3_connections: Dict[str, Any] = {}
+        self.smart_contracts: Dict[str, Any] = {}
+        self.defi_analytics: Dict[str, Any] = {}
         
         # Performance metrics
         self.metrics = {
@@ -245,7 +378,10 @@ class FinancialAIEngine:
             'total_portfolios': 0,
             'avg_signal_confidence': 0.0,
             'avg_fraud_detection_accuracy': 0.0,
-            'total_portfolio_value': 0.0
+            'total_portfolio_value': 0.0,
+            'real_time_data_points': 0,
+            'defi_transactions': 0,
+            'options_trades': 0
         }
         
         # Threading
@@ -255,11 +391,20 @@ class FinancialAIEngine:
         self.pandas_available = PANDAS_AVAILABLE
         self.scipy_available = SCIPY_AVAILABLE
         self.sklearn_available = SKLEARN_AVAILABLE
+        self.yfinance_available = YFINANCE_AVAILABLE
+        self.ccxt_available = CCXT_AVAILABLE
+        self.talib_available = TALIB_AVAILABLE
+        self.plotly_available = PLOTLY_AVAILABLE
+        self.web3_available = WEB3_AVAILABLE
+        self.websocket_available = WEBSOCKET_AVAILABLE
         
         # Initialize financial knowledge base
         self._initialize_financial_knowledge()
         
-        self.logger.info("Financial AI engine initialized")
+        # Initialize advanced features
+        self._initialize_advanced_features()
+        
+        self.logger.info("Financial AI engine initialized with advanced features")
     
     def _initialize_financial_knowledge(self):
         """Initialize financial knowledge base."""
@@ -297,6 +442,63 @@ class FinancialAIEngine:
             'insider_trading': ['timing_of_trades', 'material_nonpublic_information', 'unusual_profits'],
             'market_manipulation': ['pump_and_dump', 'spoofing', 'layering']
         }
+    
+    def _initialize_advanced_features(self):
+        """Initialize advanced financial features."""
+        # DeFi protocols
+        self.defi_protocols_data = {
+            'uniswap': {
+                'name': 'Uniswap',
+                'type': 'dex',
+                'blockchain': 'ethereum',
+                'supported_tokens': ['ETH', 'USDC', 'USDT', 'DAI']
+            },
+            'aave': {
+                'name': 'Aave',
+                'type': 'lending',
+                'blockchain': 'ethereum',
+                'supported_tokens': ['ETH', 'USDC', 'USDT', 'DAI', 'LINK']
+            },
+            'compound': {
+                'name': 'Compound',
+                'type': 'lending',
+                'blockchain': 'ethereum',
+                'supported_tokens': ['ETH', 'USDC', 'USDT', 'DAI']
+            }
+        }
+        
+        # Technical indicators configuration
+        self.technical_indicators_config = {
+            'rsi': {'period': 14, 'overbought': 70, 'oversold': 30},
+            'macd': {'fast_period': 12, 'slow_period': 26, 'signal_period': 9},
+            'bollinger_bands': {'period': 20, 'std_dev': 2},
+            'moving_average': {'short_period': 10, 'long_period': 50}
+        }
+        
+        # Real-time data sources
+        self.data_sources = {
+            'stock_market': ['yahoo_finance', 'alpha_vantage', 'polygon'],
+            'crypto': ['binance', 'coinbase', 'kraken'],
+            'forex': ['oanda', 'fxcm', 'dukascopy'],
+            'commodities': ['bloomberg', 'reuters', 'yahoo_finance']
+        }
+        
+        # Options pricing models
+        self.options_models = {
+            'black_scholes': 'Standard Black-Scholes model',
+            'binomial': 'Binomial options pricing model',
+            'monte_carlo': 'Monte Carlo simulation model'
+        }
+        
+        # Risk management parameters
+        self.risk_parameters = {
+            'max_position_size': 0.05,  # 5% of portfolio
+            'max_drawdown': 0.20,  # 20% maximum drawdown
+            'var_confidence': 0.95,  # 95% VaR confidence level
+            'stress_test_scenarios': ['market_crash', 'interest_rate_shock', 'currency_crisis']
+        }
+        
+        self.logger.info("Advanced financial features initialized")
     
     def add_asset(self, asset_data: Dict[str, Any]) -> str:
         """Add a financial asset to the system."""
@@ -966,10 +1168,276 @@ class FinancialAIEngine:
                 'total_market_sentiments': len(self.market_sentiments),
                 'total_financial_forecasts': len(self.financial_forecasts),
                 'total_transactions': len(self.transactions),
+                'total_defi_protocols': len(self.defi_protocols),
+                'total_real_time_data': len(self.real_time_data),
+                'total_technical_indicators': len(self.technical_indicators),
+                'total_options_contracts': len(self.options_contracts),
+                'total_crypto_wallets': len(self.crypto_wallets),
                 'pandas_available': self.pandas_available,
                 'scipy_available': self.scipy_available,
-                'sklearn_available': self.sklearn_available
+                'sklearn_available': self.sklearn_available,
+                'yfinance_available': self.yfinance_available,
+                'ccxt_available': self.ccxt_available,
+                'talib_available': self.talib_available,
+                'plotly_available': self.plotly_available,
+                'web3_available': self.web3_available,
+                'websocket_available': self.websocket_available
             }
+    
+    # Advanced Financial Features
+    
+    async def start_real_time_data_stream(self, asset_id: str, source: str = "yahoo_finance") -> str:
+        """Start real-time market data stream for an asset."""
+        if asset_id not in self.assets:
+            raise ValueError(f"Asset ID {asset_id} not found")
+        
+        stream_id = f"stream_{asset_id}_{int(time.time())}"
+        
+        if not self.websocket_available:
+            self.logger.warning("WebSocket not available for real-time data")
+            return stream_id
+        
+        # Simulate real-time data stream
+        async def data_stream():
+            while stream_id in self.market_data_streams:
+                try:
+                    # Generate real-time data
+                    asset = self.assets[asset_id]
+                    current_price = asset.current_price * (1 + random.uniform(-0.02, 0.02))
+                    
+                    market_data = RealTimeMarketData(
+                        data_id=f"data_{asset_id}_{int(time.time())}",
+                        asset_id=asset_id,
+                        price=current_price,
+                        volume=random.randint(1000, 10000),
+                        bid=current_price * 0.999,
+                        ask=current_price * 1.001,
+                        high=current_price * 1.01,
+                        low=current_price * 0.99,
+                        change_percent=random.uniform(-5, 5),
+                        timestamp=datetime.now(),
+                        source=source
+                    )
+                    
+                    with self.lock:
+                        self.real_time_data[market_data.data_id] = market_data
+                        self.metrics['real_time_data_points'] += 1
+                    
+                    await asyncio.sleep(1)  # Update every second
+                    
+                except Exception as e:
+                    self.logger.error(f"Error in data stream: {e}")
+                    break
+        
+        # Start the data stream
+        self.market_data_streams[stream_id] = asyncio.create_task(data_stream())
+        
+        self.logger.info(f"Started real-time data stream: {stream_id}")
+        return stream_id
+    
+    async def stop_real_time_data_stream(self, stream_id: str) -> bool:
+        """Stop a real-time market data stream."""
+        if stream_id in self.market_data_streams:
+            self.market_data_streams[stream_id].cancel()
+            del self.market_data_streams[stream_id]
+            self.logger.info(f"Stopped real-time data stream: {stream_id}")
+            return True
+        return False
+    
+    async def calculate_technical_indicators(self, asset_id: str, indicator_type: str = "rsi") -> str:
+        """Calculate technical indicators for an asset."""
+        if asset_id not in self.assets:
+            raise ValueError(f"Asset ID {asset_id} not found")
+        
+        if not self.talib_available:
+            self.logger.warning("TA-Lib not available for technical indicators")
+            return ""
+        
+        indicator_id = f"indicator_{asset_id}_{indicator_type}_{int(time.time())}"
+        
+        # Simulate technical indicator calculation
+        if indicator_type == "rsi":
+            value = random.uniform(30, 70)
+            if value > 70:
+                signal = "sell"
+            elif value < 30:
+                signal = "buy"
+            else:
+                signal = "hold"
+        elif indicator_type == "macd":
+            value = random.uniform(-2, 2)
+            if value > 0:
+                signal = "buy"
+            else:
+                signal = "sell"
+        else:
+            value = random.uniform(0, 100)
+            signal = "hold"
+        
+        technical_indicator = TechnicalIndicator(
+            indicator_id=indicator_id,
+            asset_id=asset_id,
+            indicator_type=indicator_type,
+            value=value,
+            signal=signal,
+            confidence=random.uniform(0.6, 0.9),
+            timestamp=datetime.now()
+        )
+        
+        with self.lock:
+            self.technical_indicators[indicator_id] = technical_indicator
+        
+        self.logger.info(f"Calculated technical indicator: {indicator_id}")
+        return indicator_id
+    
+    async def add_defi_protocol(self, protocol_data: Dict[str, Any]) -> str:
+        """Add a DeFi protocol to the system."""
+        protocol_id = f"defi_{protocol_data.get('name', 'UNKNOWN').lower()}_{int(time.time())}"
+        
+        protocol = DeFiProtocol(
+            protocol_id=protocol_id,
+            name=protocol_data.get('name', ''),
+            protocol_type=protocol_data.get('type', 'dex'),
+            total_value_locked=protocol_data.get('tvl', 0.0),
+            apy=protocol_data.get('apy', 0.0),
+            risk_score=protocol_data.get('risk_score', 0.5),
+            smart_contract_address=protocol_data.get('contract_address', ''),
+            blockchain=protocol_data.get('blockchain', 'ethereum'),
+            supported_tokens=protocol_data.get('supported_tokens', [])
+        )
+        
+        with self.lock:
+            self.defi_protocols[protocol_id] = protocol
+        
+        self.logger.info(f"Added DeFi protocol: {protocol_id} ({protocol.name})")
+        return protocol_id
+    
+    async def calculate_options_greeks(self, contract_data: Dict[str, Any]) -> str:
+        """Calculate options Greeks for a contract."""
+        contract_id = f"options_{contract_data.get('underlying', 'UNKNOWN')}_{int(time.time())}"
+        
+        # Simulate options Greeks calculation
+        implied_volatility = random.uniform(0.1, 0.5)
+        delta = random.uniform(-1, 1)
+        gamma = random.uniform(0, 0.1)
+        theta = random.uniform(-0.1, 0)
+        vega = random.uniform(0, 0.5)
+        
+        options_contract = OptionsContract(
+            contract_id=contract_id,
+            underlying_asset=contract_data.get('underlying', ''),
+            contract_type=contract_data.get('type', 'call'),
+            strike_price=contract_data.get('strike', 100.0),
+            expiration_date=datetime.now() + timedelta(days=30),
+            implied_volatility=implied_volatility,
+            delta=delta,
+            gamma=gamma,
+            theta=theta,
+            vega=vega,
+            current_price=contract_data.get('price', 10.0)
+        )
+        
+        with self.lock:
+            self.options_contracts[contract_id] = options_contract
+            self.metrics['options_trades'] += 1
+        
+        self.logger.info(f"Calculated options Greeks: {contract_id}")
+        return contract_id
+    
+    async def add_crypto_wallet(self, wallet_data: Dict[str, Any]) -> str:
+        """Add a cryptocurrency wallet to the system."""
+        wallet_id = f"wallet_{wallet_data.get('address', 'UNKNOWN')[:8]}_{int(time.time())}"
+        
+        wallet = CryptoWallet(
+            wallet_id=wallet_id,
+            address=wallet_data.get('address', ''),
+            blockchain=wallet_data.get('blockchain', 'ethereum'),
+            balance=wallet_data.get('balance', {}),
+            transactions=wallet_data.get('transactions', []),
+            security_score=wallet_data.get('security_score', 0.8)
+        )
+        
+        with self.lock:
+            self.crypto_wallets[wallet_id] = wallet
+        
+        self.logger.info(f"Added crypto wallet: {wallet_id}")
+        return wallet_id
+    
+    async def execute_defi_transaction(self, protocol_id: str, transaction_data: Dict[str, Any]) -> str:
+        """Execute a DeFi transaction."""
+        if protocol_id not in self.defi_protocols:
+            raise ValueError(f"Protocol ID {protocol_id} not found")
+        
+        transaction_id = f"defi_tx_{protocol_id}_{int(time.time())}"
+        
+        # Simulate DeFi transaction
+        protocol = self.defi_protocols[protocol_id]
+        
+        # Update protocol TVL
+        tvl_change = transaction_data.get('amount', 0.0)
+        protocol.total_value_locked += tvl_change
+        
+        with self.lock:
+            self.metrics['defi_transactions'] += 1
+        
+        self.logger.info(f"Executed DeFi transaction: {transaction_id}")
+        return transaction_id
+    
+    async def generate_market_visualization(self, asset_id: str, chart_type: str = "candlestick") -> Dict[str, Any]:
+        """Generate market visualization charts."""
+        if not self.plotly_available:
+            return {"error": "Plotly not available for visualization"}
+        
+        if asset_id not in self.assets:
+            return {"error": f"Asset ID {asset_id} not found"}
+        
+        # Simulate chart data
+        dates = pd.date_range(start='2024-01-01', end='2024-12-31', freq='D')
+        prices = [100 + i * 0.1 + random.uniform(-5, 5) for i in range(len(dates))]
+        
+        chart_data = {
+            'dates': dates.tolist(),
+            'prices': prices,
+            'volume': [random.randint(1000, 10000) for _ in range(len(dates))],
+            'asset_id': asset_id,
+            'chart_type': chart_type
+        }
+        
+        self.logger.info(f"Generated market visualization for asset: {asset_id}")
+        return chart_data
+    
+    async def perform_stress_test(self, portfolio_id: str, scenario: str = "market_crash") -> Dict[str, Any]:
+        """Perform stress testing on a portfolio."""
+        if portfolio_id not in self.portfolios:
+            return {"error": f"Portfolio ID {portfolio_id} not found"}
+        
+        portfolio = self.portfolios[portfolio_id]
+        
+        # Simulate stress test scenarios
+        stress_scenarios = {
+            'market_crash': {'equity_shock': -0.3, 'bond_shock': -0.1, 'currency_shock': -0.05},
+            'interest_rate_shock': {'equity_shock': -0.1, 'bond_shock': -0.2, 'currency_shock': -0.02},
+            'currency_crisis': {'equity_shock': -0.15, 'bond_shock': -0.05, 'currency_shock': -0.25}
+        }
+        
+        scenario_data = stress_scenarios.get(scenario, stress_scenarios['market_crash'])
+        
+        # Calculate portfolio impact
+        total_impact = sum(scenario_data.values()) / len(scenario_data)
+        new_portfolio_value = portfolio.total_value * (1 + total_impact)
+        
+        stress_test_result = {
+            'portfolio_id': portfolio_id,
+            'scenario': scenario,
+            'original_value': portfolio.total_value,
+            'stressed_value': new_portfolio_value,
+            'impact_percent': total_impact * 100,
+            'scenario_details': scenario_data,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        self.logger.info(f"Performed stress test on portfolio: {portfolio_id}")
+        return stress_test_result
 
 
 # Global instance

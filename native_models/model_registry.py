@@ -14,12 +14,12 @@ from .llm_engine import llm_engine
 from .lam_engine import lam_engine
 from .text_to_code import text_to_code_engine
 from .text_to_3d import text_to_3d_engine
-from .vision_model import vision_engine
+from .vision_model import vision_model
 from .emotion_classifier import emotion_engine
 from .text_to_text import text_to_text_engine
 from .text_to_video import text_to_video_engine
 from .text_to_logic import text_to_logic_engine
-from .voice_model import voice_engine
+from .voice_model import voice_model
 from .text_to_shell import text_to_shell_engine
 from .text_to_sql import text_to_sql_engine
 from .context_model import context_engine
@@ -121,12 +121,12 @@ class ModelRegistry:
                            ["text"], ["video"])
         
         # Sensory models
-        self._register_model("vision_model", ModelCategory.VISION, vision_engine,
+        self._register_model("vision_model", ModelCategory.VISION, vision_model,
                            "Computer vision and image processing",
                            ["image_analysis", "object_detection", "image_generation"],
                            ["image", "text"], ["text", "image"])
         
-        self._register_model("voice_model", ModelCategory.AUDIO, voice_engine,
+        self._register_model("voice_model", ModelCategory.AUDIO, voice_model,
                            "Voice and audio processing",
                            ["speech_recognition", "text_to_speech", "audio_analysis"],
                            ["audio", "text"], ["text", "audio"])

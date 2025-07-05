@@ -35,11 +35,44 @@ class LogicResult:
 class TextToLogic:
     """
     Analyzes text for logical structure, meaning, and conceptual relationships.
+    Supports multi-language, multi-modal, and SOTA logic/constraint solver integration (Z3, Prolog, GPT-4, OpenAI, Google, etc.).
     Provides syntactic analysis, semantic interpretation, and concept visualization.
     """
     
-    def __init__(self):
+    def __init__(self, backend: str = "rule-based"):
         """Initialize the TextToLogic analyzer."""
+        self.backend = backend
+        # SOTA logic/constraint solver stubs (to be implemented)
+        self.z3 = None
+        self.prolog = None
+        self.gpt4 = None
+        self.openai = None
+        self.google = None
+        try:
+            from unimind.native_models.free_models.logic.z3_loader import Z3Loader
+            self.z3 = Z3Loader()
+        except ImportError:
+            pass
+        try:
+            from unimind.native_models.free_models.logic.prolog_loader import PrologLoader
+            self.prolog = PrologLoader()
+        except ImportError:
+            pass
+        try:
+            from unimind.native_models.free_models.logic.gpt4_logic_loader import GPT4LogicLoader
+            self.gpt4 = GPT4LogicLoader()
+        except ImportError:
+            pass
+        try:
+            from unimind.native_models.free_models.logic.openai_logic_loader import OpenAILogicLoader
+            self.openai = OpenAILogicLoader()
+        except ImportError:
+            pass
+        try:
+            from unimind.native_models.free_models.logic.google_logic_loader import GoogleLogicLoader
+            self.google = GoogleLogicLoader()
+        except ImportError:
+            pass
         self.logic_connectors = {
             "conjunction": ["and", "also", "moreover", "furthermore", "in addition"],
             "disjunction": ["or", "either", "neither", "nor"],
@@ -63,7 +96,7 @@ class TextToLogic:
             "quantities": r"\b\d+\b|\b\w+%\b|\b\w+th\b"
         }
         
-    def analyze_syntax(self, text: str) -> LogicResult:
+    def analyze_syntax(self, text: str, language: str = "en") -> LogicResult:
         """
         Analyze the syntactic structure of input text.
         
@@ -73,6 +106,21 @@ class TextToLogic:
         Returns:
             LogicResult containing syntactic analysis
         """
+        if self.backend == "z3" and self.z3:
+            return self.z3.analyze_syntax(text, language)
+        elif self.backend == "prolog" and self.prolog:
+            return self.prolog.analyze_syntax(text, language)
+        elif self.backend == "gpt4" and self.gpt4:
+            return self.gpt4.analyze_syntax(text, language)
+        elif self.backend == "openai" and self.openai:
+            return self.openai.analyze_syntax(text, language)
+        elif self.backend == "google" and self.google:
+            return self.google.analyze_syntax(text, language)
+        else:
+            # Fallback to rule-based
+            return self._analyze_syntax_rule_based(text, language)
+    
+    def _analyze_syntax_rule_based(self, text: str, language: str = "en") -> LogicResult:
         sentences = self._split_sentences(text)
         words = self._tokenize(text)
         

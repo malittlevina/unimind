@@ -41,6 +41,85 @@ try:
 except ImportError:
     SKLEARN_AVAILABLE = False
 
+# Advanced robotics libraries
+try:
+    import cv2
+    OPENCV_AVAILABLE = True
+except ImportError:
+    OPENCV_AVAILABLE = False
+
+try:
+    import torch
+    import torch.nn as nn
+    PYTORCH_AVAILABLE = True
+except ImportError:
+    PYTORCH_AVAILABLE = False
+
+try:
+    import tensorflow as tf
+    TENSORFLOW_AVAILABLE = True
+except ImportError:
+    TENSORFLOW_AVAILABLE = False
+
+# ROS2 integration
+try:
+    import rclpy
+    from rclpy.node import Node
+    from geometry_msgs.msg import Pose, Twist, Point
+    from sensor_msgs.msg import LaserScan, Image, Imu
+    ROS2_AVAILABLE = True
+except ImportError:
+    ROS2_AVAILABLE = False
+
+# Computer vision and perception
+try:
+    import open3d as o3d
+    OPEN3D_AVAILABLE = True
+except ImportError:
+    OPEN3D_AVAILABLE = False
+
+try:
+    import pyrealsense2 as rs
+    REALSENSE_AVAILABLE = True
+except ImportError:
+    REALSENSE_AVAILABLE = False
+
+# Motion planning and control
+try:
+    import moveit_commander
+    MOVEIT_AVAILABLE = True
+except ImportError:
+    MOVEIT_AVAILABLE = False
+
+try:
+    import pybullet
+    PYBULLET_AVAILABLE = True
+except ImportError:
+    PYBULLET_AVAILABLE = False
+
+# Visualization
+try:
+    import matplotlib.pyplot as plt
+    import matplotlib.animation as animation
+    MATPLOTLIB_AVAILABLE = True
+except ImportError:
+    MATPLOTLIB_AVAILABLE = False
+
+try:
+    import plotly.graph_objects as go
+    import plotly.express as px
+    PLOTLY_AVAILABLE = True
+except ImportError:
+    PLOTLY_AVAILABLE = False
+
+# Reinforcement learning
+try:
+    import gym
+    import stable_baselines3
+    RL_AVAILABLE = True
+except ImportError:
+    RL_AVAILABLE = False
+
 
 class RobotType(Enum):
     """Types of robots."""
@@ -188,6 +267,117 @@ class Decision:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
+@dataclass
+class ROS2Node:
+    """ROS2 node configuration."""
+    node_id: str
+    node_name: str
+    node_type: str  # "publisher", "subscriber", "service", "action"
+    topics: List[Dict[str, Any]]
+    services: List[Dict[str, Any]]
+    actions: List[Dict[str, Any]]
+    parameters: Dict[str, Any]
+    qos_profile: str
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class ComputerVision:
+    """Computer vision and perception system."""
+    vision_id: str
+    robot_id: str
+    camera_config: Dict[str, Any]
+    detection_models: List[Dict[str, Any]]
+    tracking_algorithms: List[str]
+    depth_estimation: Dict[str, Any]
+    object_recognition: Dict[str, Any]
+    scene_understanding: Dict[str, Any]
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class MultiRobotCoordination:
+    """Multi-robot coordination system."""
+    coordination_id: str
+    robot_team: List[str]
+    coordination_strategy: str  # "centralized", "decentralized", "hierarchical"
+    communication_protocol: str
+    task_allocation: Dict[str, Any]
+    formation_control: Dict[str, Any]
+    collision_avoidance: Dict[str, Any]
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class MotionPlanning:
+    """Advanced motion planning system."""
+    planning_id: str
+    robot_id: str
+    planning_algorithm: str  # "rrt", "prm", "a_star", "dijkstra"
+    configuration_space: Dict[str, Any]
+    constraints: List[Dict[str, Any]]
+    optimization_objectives: List[str]
+    trajectory_generation: Dict[str, Any]
+    execution_monitoring: Dict[str, Any]
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class ReinforcementLearning:
+    """Reinforcement learning for robotics."""
+    rl_id: str
+    robot_id: str
+    environment: str
+    algorithm: str  # "ppo", "sac", "td3", "ddpg"
+    state_space: Dict[str, Any]
+    action_space: Dict[str, Any]
+    reward_function: Dict[str, Any]
+    training_status: str  # "training", "evaluating", "deployed"
+    performance_metrics: Dict[str, float]
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class HumanRobotInteraction:
+    """Human-robot interaction system."""
+    hri_id: str
+    robot_id: str
+    interaction_modes: List[str]  # "gesture", "voice", "touch", "gaze"
+    safety_zones: Dict[str, Any]
+    intention_recognition: Dict[str, Any]
+    social_signals: Dict[str, Any]
+    collaboration_protocols: List[Dict[str, Any]]
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class RobotLearning:
+    """Robot learning and adaptation."""
+    learning_id: str
+    robot_id: str
+    learning_type: str  # "imitation", "reinforcement", "transfer", "meta"
+    training_data: Dict[str, Any]
+    model_architecture: Dict[str, Any]
+    adaptation_strategy: Dict[str, Any]
+    performance_evaluation: Dict[str, Any]
+    knowledge_transfer: Dict[str, Any]
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class SwarmRobotics:
+    """Swarm robotics system."""
+    swarm_id: str
+    swarm_size: int
+    robot_types: List[RobotType]
+    swarm_behavior: str  # "flocking", "foraging", "exploration", "construction"
+    communication_topology: str  # "all_to_all", "nearest_neighbor", "hierarchical"
+    collective_decision_making: Dict[str, Any]
+    emergent_behaviors: List[str]
+    scalability_metrics: Dict[str, float]
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
 class AutonomousRoboticsEngine:
     """
     Advanced autonomous systems and robotics engine for UniMind.
@@ -209,22 +399,57 @@ class AutonomousRoboticsEngine:
         self.sensor_fusions: Dict[str, SensorFusion] = {}
         self.decisions: Dict[str, Decision] = {}
         
-        # Planning and control systems
-        self.path_planners: Dict[str, Any] = {}
-        self.sensor_fusion_algorithms: Dict[str, Any] = {}
-        self.decision_makers: Dict[str, Any] = {}
-        self.controllers: Dict[str, Any] = {}
+        # Advanced robotics data structures
+        self.ros2_nodes: Dict[str, ROS2Node] = {}
+        self.computer_vision: Dict[str, ComputerVision] = {}
+        self.multi_robot_coordination: Dict[str, MultiRobotCoordination] = {}
+        self.motion_planning: Dict[str, MotionPlanning] = {}
+        self.reinforcement_learning: Dict[str, ReinforcementLearning] = {}
+        self.human_robot_interaction: Dict[str, HumanRobotInteraction] = {}
+        self.robot_learning: Dict[str, RobotLearning] = {}
+        self.swarm_robotics: Dict[str, SwarmRobotics] = {}
+        
+        # ROS2 and communication systems
+        self.ros2_executor: Optional[Any] = None
+        self.ros2_nodes_running: Dict[str, Any] = {}
+        self.topic_publishers: Dict[str, Any] = {}
+        self.topic_subscribers: Dict[str, Any] = {}
+        
+        # Computer vision and perception
+        self.vision_models: Dict[str, Any] = {}
+        self.detection_engines: Dict[str, Any] = {}
+        self.tracking_systems: Dict[str, Any] = {}
+        
+        # Motion planning and control
+        self.planning_algorithms: Dict[str, Any] = {}
+        self.control_systems: Dict[str, Any] = {}
+        self.trajectory_generators: Dict[str, Any] = {}
+        
+        # AI and learning systems
+        self.rl_agents: Dict[str, Any] = {}
+        self.learning_models: Dict[str, Any] = {}
+        self.adaptation_engines: Dict[str, Any] = {}
         
         # Performance metrics
         self.metrics = {
             'total_robots': 0,
-            'total_tasks': 0,
+            'total_sensors': 0,
+            'total_environments': 0,
             'total_paths': 0,
+            'total_tasks': 0,
+            'total_sensor_fusions': 0,
             'total_decisions': 0,
+            'total_ros2_nodes': 0,
+            'total_vision_systems': 0,
+            'total_coordination_systems': 0,
+            'total_planning_systems': 0,
+            'total_rl_agents': 0,
+            'total_learning_systems': 0,
+            'total_swarm_systems': 0,
             'avg_task_completion_time': 0.0,
-            'avg_path_length': 0.0,
-            'avg_decision_confidence': 0.0,
-            'collision_avoidance_success_rate': 0.0
+            'avg_path_planning_time': 0.0,
+            'avg_decision_making_time': 0.0,
+            'robot_autonomy_level': 0.0
         }
         
         # Threading
@@ -234,11 +459,25 @@ class AutonomousRoboticsEngine:
         self.pandas_available = PANDAS_AVAILABLE
         self.scipy_available = SCIPY_AVAILABLE
         self.sklearn_available = SKLEARN_AVAILABLE
+        self.opencv_available = OPENCV_AVAILABLE
+        self.pytorch_available = PYTORCH_AVAILABLE
+        self.tensorflow_available = TENSORFLOW_AVAILABLE
+        self.ros2_available = ROS2_AVAILABLE
+        self.open3d_available = OPEN3D_AVAILABLE
+        self.realsense_available = REALSENSE_AVAILABLE
+        self.moveit_available = MOVEIT_AVAILABLE
+        self.pybullet_available = PYBULLET_AVAILABLE
+        self.matplotlib_available = MATPLOTLIB_AVAILABLE
+        self.plotly_available = PLOTLY_AVAILABLE
+        self.rl_available = RL_AVAILABLE
         
         # Initialize robotics knowledge base
         self._initialize_robotics_knowledge()
         
-        self.logger.info("Autonomous robotics engine initialized")
+        # Initialize advanced features
+        self._initialize_advanced_features()
+        
+        self.logger.info("Autonomous robotics engine initialized with advanced features")
     
     def _initialize_robotics_knowledge(self):
         """Initialize robotics knowledge base."""
@@ -333,6 +572,45 @@ class AutonomousRoboticsEngine:
                 'maneuverability': 'very_high'
             }
         }
+    
+    def _initialize_advanced_features(self):
+        """Initialize advanced robotics features for UniMind."""
+        # Multi-robot coordination
+        self.multi_robot_coordination = {}
+        # Advanced motion planning
+        self.motion_planning = {}
+        # Swarm robotics
+        self.swarm_robotics = {}
+        # Reinforcement learning for robotics
+        self.reinforcement_learning = {}
+        # Human-robot interaction
+        self.human_robot_interaction = {}
+        # Robot learning
+        self.robot_learning = {}
+        # Real-time sensor streaming
+        self.sensor_streaming = {}
+        # AI adaptive control
+        self.adaptive_control = {}
+        # ROS2 integration
+        self.ros2_nodes = {}
+        self.ros2_executor = None
+        self.ros2_nodes_running = {}
+        # Computer vision
+        self.computer_vision = {}
+        # Performance metrics for advanced features
+        self.advanced_metrics = {
+            'multi_robot_coordination': 0,
+            'motion_planning': 0,
+            'swarm_robots': 0,
+            'reinforcement_learning': 0,
+            'human_robot_interaction': 0,
+            'robot_learning': 0,
+            'sensor_streaming': 0,
+            'adaptive_control': 0,
+            'ros2_nodes': 0,
+            'computer_vision': 0
+        }
+        self.logger.info("Advanced robotics features initialized")
     
     async def register_robot(self, robot_data: Dict[str, Any]) -> str:
         """Register a new robot."""

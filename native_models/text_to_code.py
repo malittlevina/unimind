@@ -43,12 +43,74 @@ class TextToCodeEngine:
         self.language_keywords = {
             "python": ["def ", "import ", "print(", "lambda ", "#"],
             "javascript": ["function ", "console.log(", "let ", "const ", "//"],
+            "typescript": ["function ", "console.log(", "let ", "const ", ": ", "//"],
+            "java": ["public class ", "System.out.println(", "import java.", "void main"],
+            "c": ["#include <", "int main(", "printf(", "scanf(", "//"],
+            "cpp": ["#include <", "std::cout", "std::cin", "using namespace std;", "//"],
+            "c++": ["#include <", "std::cout", "std::cin", "using namespace std;", "//"],
+            "c#": ["using System;", "namespace ", "public class ", "Console.WriteLine(", "//"],
+            "go": ["package main", "func main(", "fmt.Println(", "import ("],
+            "rust": ["fn main()", "println!(", "let ", "use "],
+            "swift": ["import Foundation", "func ", "let ", "var ", "print("],
+            "kotlin": ["fun main(", "val ", "var ", "println("],
+            "ruby": ["def ", "puts ", "end", "class "],
+            "php": ["<?php", "echo ", "$", "function "],
+            "perl": ["use strict;", "my $", "print ", "sub "],
+            "r": ["<-", "print(", "function(", "#"],
+            "matlab": ["function ", "end", "%"],
+            "julia": ["function ", "end", "println("],
+            "scala": ["object ", "def ", "println("],
+            "haskell": ["main = ", "::", "->", "where"],
+            "dart": ["void main(", "print(", "import '"],
+            "shell": ["#!/bin/sh", "echo ", "$", "#"],
             "bash": ["#!/bin/bash", "echo ", "$", "#"],
+            "powershell": ["Write-Host ", "$", "function "],
+            "fortran": ["program ", "end program", "print *,"],
+            "cobol": ["IDENTIFICATION DIVISION.", "PROCEDURE DIVISION."],
+            "lisp": ["(defun ", "(setq ", ";"],
+            "prolog": [":-", "?-", "write("],
+            "erlang": ["-module(", "-export(", "io:format("],
+            "elixir": ["defmodule ", "def ", "IO.puts("],
+            "f#": ["let ", "open ", "printfn("],
+            "ocaml": ["let ", "open ", "print_endline("],
+            "groovy": ["println ", "def ", "class "],
             "sql": ["SELECT ", "INSERT ", "UPDATE ", "DELETE ", ";"],
+            "html": ["<html>", "<body>", "<div>", "<!DOCTYPE html>"],
+            "css": [".class {", "#id {", "color:", "font-size:"],
+            "xml": ["<?xml", "<", "/>"],
+            "yaml": [":", "- "],
+            "toml": ["[", "]", "= "],
+            "markdown": ["# ", "* ", "- "],
+            "latex": ["\\begin{", "\\end{", "\\section{", "\\documentclass"]
         }
         # SOTA model instances
         self.codellama = None
         self.deepseek = None
+        self.starcoder = None
+        self.gpt4 = None
+        self.gemini = None
+        self.claude = None
+        # Add stubs for SOTA model loaders (to be implemented)
+        try:
+            from unimind.native_models.free_models.code.starcoder_loader import StarCoderLoader
+            self.starcoder = StarCoderLoader()
+        except ImportError:
+            pass
+        try:
+            from unimind.native_models.free_models.code.gpt4_loader import GPT4Loader
+            self.gpt4 = GPT4Loader()
+        except ImportError:
+            pass
+        try:
+            from unimind.native_models.free_models.code.gemini_loader import GeminiLoader
+            self.gemini = GeminiLoader()
+        except ImportError:
+            pass
+        try:
+            from unimind.native_models.free_models.code.claude_loader import ClaudeLoader
+            self.claude = ClaudeLoader()
+        except ImportError:
+            pass
         if backend == "codellama" and Codellama_7BLoader:
             self.codellama = Codellama_7BLoader()
             self.codellama.load_model(quantization=quantization)

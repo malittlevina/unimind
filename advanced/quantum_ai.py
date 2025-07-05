@@ -18,6 +18,7 @@ import threading
 from datetime import datetime, timedelta
 import hashlib
 import random
+from math import log2
 
 # Quantum computing dependencies
 try:
@@ -41,6 +42,60 @@ try:
     PANDAS_AVAILABLE = True
 except ImportError:
     PANDAS_AVAILABLE = False
+
+# Advanced quantum libraries
+try:
+    import cirq
+    CIRQ_AVAILABLE = True
+except ImportError:
+    CIRQ_AVAILABLE = False
+
+try:
+    import tensorflow_quantum as tfq
+    TFQ_AVAILABLE = True
+except ImportError:
+    TFQ_AVAILABLE = False
+
+try:
+    import torch
+    import torch.nn as nn
+    PYTORCH_AVAILABLE = True
+except ImportError:
+    PYTORCH_AVAILABLE = False
+
+try:
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    MATPLOTLIB_AVAILABLE = True
+except ImportError:
+    MATPLOTLIB_AVAILABLE = False
+
+try:
+    import plotly.graph_objects as go
+    import plotly.express as px
+    PLOTLY_AVAILABLE = True
+except ImportError:
+    PLOTLY_AVAILABLE = False
+
+# Quantum error correction
+try:
+    import stim
+    STIM_AVAILABLE = True
+except ImportError:
+    STIM_AVAILABLE = False
+
+# Quantum chemistry
+try:
+    import openfermion
+    OPENFERMION_AVAILABLE = True
+except ImportError:
+    OPENFERMION_AVAILABLE = False
+
+try:
+    import pyscf
+    PYSCF_AVAILABLE = True
+except ImportError:
+    PYSCF_AVAILABLE = False
 
 
 class QuantumAlgorithmType(Enum):
@@ -156,6 +211,95 @@ class QuantumCryptography:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
+@dataclass
+class QuantumErrorCorrection:
+    """Quantum error correction code."""
+    code_id: str
+    code_type: str  # "surface_code", "stabilizer_code", "css_code"
+    num_logical_qubits: int
+    num_physical_qubits: int
+    error_threshold: float
+    correction_capability: Dict[str, Any]
+    syndrome_measurement: List[Dict[str, Any]]
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class QuantumMachineLearning:
+    """Quantum machine learning model."""
+    model_id: str
+    model_type: str  # "quantum_neural_network", "quantum_kernel", "quantum_boltzmann"
+    architecture: Dict[str, Any]
+    parameters: Dict[str, float]
+    training_data: Dict[str, Any]
+    validation_metrics: Dict[str, float]
+    quantum_advantage: bool
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class HybridQuantumClassical:
+    """Hybrid quantum-classical system."""
+    hybrid_id: str
+    system_type: str  # "vqe", "qaoa", "quantum_approximate_optimization"
+    quantum_component: str
+    classical_component: str
+    interface_protocol: str
+    optimization_loop: Dict[str, Any]
+    convergence_metrics: Dict[str, float]
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class QuantumChemistry:
+    """Quantum chemistry simulation."""
+    chemistry_id: str
+    molecule: str
+    basis_set: str
+    hamiltonian: np.ndarray
+    ground_state_energy: float
+    excited_states: List[float]
+    molecular_orbitals: Dict[str, Any]
+    quantum_algorithm: QuantumAlgorithmType
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class QuantumNoiseModel:
+    """Quantum noise and decoherence model."""
+    noise_id: str
+    noise_type: str  # "depolarizing", "amplitude_damping", "phase_damping"
+    noise_parameters: Dict[str, float]
+    decoherence_times: Dict[str, float]
+    error_rates: Dict[str, float]
+    mitigation_strategies: List[str]
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class QuantumEntanglement:
+    """Quantum entanglement analysis."""
+    entanglement_id: str
+    qubit_pairs: List[Tuple[int, int]]
+    entanglement_measures: Dict[str, float]
+    bell_state_fidelity: float
+    entanglement_witness: Dict[str, Any]
+    purification_protocol: str
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class QuantumRandomness:
+    """Quantum random number generation."""
+    randomness_id: str
+    generation_method: str  # "measurement", "quantum_walk", "quantum_optics"
+    entropy_source: str
+    randomness_rate: float
+    statistical_tests: Dict[str, bool]
+    certification_level: str
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
 class QuantumAIEngine:
     """
     Advanced quantum AI engine for UniMind.
@@ -176,9 +320,26 @@ class QuantumAIEngine:
         self.quantum_optimizations: Dict[str, QuantumOptimization] = {}
         self.quantum_cryptography: Dict[str, QuantumCryptography] = {}
         
+        # Advanced quantum data structures
+        self.quantum_error_correction: Dict[str, QuantumErrorCorrection] = {}
+        self.quantum_machine_learning: Dict[str, QuantumMachineLearning] = {}
+        self.hybrid_quantum_classical: Dict[str, HybridQuantumClassical] = {}
+        self.quantum_chemistry: Dict[str, QuantumChemistry] = {}
+        self.quantum_noise_models: Dict[str, QuantumNoiseModel] = {}
+        self.quantum_entanglement: Dict[str, QuantumEntanglement] = {}
+        self.quantum_randomness: Dict[str, QuantumRandomness] = {}
+        
         # Quantum backends
         self.available_backends: Dict[str, Any] = {}
         self.backend_configurations: Dict[str, Dict[str, Any]] = {}
+        
+        # Advanced quantum systems
+        self.error_correction_engine: Dict[str, Any] = {}
+        self.quantum_ml_engine: Dict[str, Any] = {}
+        self.hybrid_optimizer: Dict[str, Any] = {}
+        self.quantum_chemistry_engine: Dict[str, Any] = {}
+        self.noise_simulator: Dict[str, Any] = {}
+        self.entanglement_analyzer: Dict[str, Any] = {}
         
         # Performance metrics
         self.metrics = {
@@ -187,8 +348,16 @@ class QuantumAIEngine:
             'total_measurements': 0,
             'total_optimizations': 0,
             'total_crypto_protocols': 0,
+            'total_error_correction_codes': 0,
+            'total_quantum_ml_models': 0,
+            'total_hybrid_systems': 0,
+            'total_chemistry_simulations': 0,
+            'total_entanglement_analyses': 0,
+            'total_randomness_generations': 0,
             'avg_execution_time': 0.0,
-            'avg_success_probability': 0.0
+            'avg_success_probability': 0.0,
+            'quantum_advantage_achieved': 0,
+            'error_correction_success_rate': 0.0
         }
         
         # Threading
@@ -198,6 +367,14 @@ class QuantumAIEngine:
         self.qiskit_available = QISKIT_AVAILABLE
         self.pennylane_available = PENNYLANE_AVAILABLE
         self.pandas_available = PANDAS_AVAILABLE
+        self.cirq_available = CIRQ_AVAILABLE
+        self.tfq_available = TFQ_AVAILABLE
+        self.pytorch_available = PYTORCH_AVAILABLE
+        self.matplotlib_available = MATPLOTLIB_AVAILABLE
+        self.plotly_available = PLOTLY_AVAILABLE
+        self.stim_available = STIM_AVAILABLE
+        self.openfermion_available = OPENFERMION_AVAILABLE
+        self.pyscf_available = PYSCF_AVAILABLE
         
         # Initialize quantum knowledge base
         self._initialize_quantum_knowledge()
@@ -205,7 +382,10 @@ class QuantumAIEngine:
         # Initialize quantum backends
         self._initialize_quantum_backends()
         
-        self.logger.info("Quantum AI engine initialized")
+        # Initialize advanced features
+        self._initialize_advanced_features()
+        
+        self.logger.info("Quantum AI engine initialized with advanced features")
     
     def _initialize_quantum_knowledge(self):
         """Initialize quantum computing knowledge base."""
@@ -264,20 +444,172 @@ class QuantumAIEngine:
                 self.available_backends['qasm_simulator'] = Aer.get_backend('qasm_simulator')
                 self.available_backends['statevector_simulator'] = Aer.get_backend('statevector_simulator')
                 
+                # Configure backend parameters
                 self.backend_configurations = {
                     'qasm_simulator': {
                         'shots': 1024,
-                        'memory': False,
-                        'max_parallel_experiments': 1
+                        'max_parallel_experiments': 1,
+                        'memory': False
                     },
                     'statevector_simulator': {
-                        'shots': 1,
-                        'memory': False,
+                        'max_parallel_experiments': 1,
+                        'memory': False
+                    },
+                    'unitary_simulator': {
                         'max_parallel_experiments': 1
                     }
                 }
             except Exception as e:
                 self.logger.warning(f"Failed to initialize Qiskit backends: {e}")
+    
+    def _initialize_advanced_features(self):
+        """Initialize advanced quantum features."""
+        # Quantum error correction codes
+        self.error_correction_codes = {
+            'surface_code': {
+                'description': 'Topological quantum error correction code',
+                'logical_qubits': 1,
+                'physical_qubits': 9,
+                'error_threshold': 0.01,
+                'syndrome_extraction': 'stabilizer_measurements'
+            },
+            'stabilizer_code': {
+                'description': 'Stabilizer-based error correction',
+                'logical_qubits': 1,
+                'physical_qubits': 5,
+                'error_threshold': 0.05,
+                'syndrome_extraction': 'parity_checks'
+            },
+            'css_code': {
+                'description': 'Calderbank-Shor-Steane code',
+                'logical_qubits': 1,
+                'physical_qubits': 7,
+                'error_threshold': 0.03,
+                'syndrome_extraction': 'classical_error_correction'
+            }
+        }
+        
+        # Quantum machine learning architectures
+        self.quantum_ml_architectures = {
+            'quantum_neural_network': {
+                'layers': ['input', 'quantum', 'output'],
+                'activation': 'quantum_nonlinearity',
+                'optimization': 'quantum_gradient_descent'
+            },
+            'quantum_kernel': {
+                'kernel_type': 'quantum_feature_map',
+                'feature_dimension': 'exponential',
+                'classification': 'support_vector_machine'
+            },
+            'quantum_boltzmann': {
+                'energy_function': 'quantum_hamiltonian',
+                'sampling': 'quantum_monte_carlo',
+                'training': 'quantum_annealing'
+            }
+        }
+        
+        # Hybrid quantum-classical workflows
+        self.hybrid_workflows = {
+            'vqe': {
+                'quantum_part': 'parameterized_quantum_circuit',
+                'classical_part': 'classical_optimizer',
+                'interface': 'parameter_update',
+                'convergence': 'energy_minimization'
+            },
+            'qaoa': {
+                'quantum_part': 'quantum_approximate_optimization',
+                'classical_part': 'classical_parameter_optimization',
+                'interface': 'cost_function_evaluation',
+                'convergence': 'approximation_ratio'
+            },
+            'quantum_approximate_optimization': {
+                'quantum_part': 'quantum_circuit_execution',
+                'classical_part': 'classical_optimization_loop',
+                'interface': 'gradient_estimation',
+                'convergence': 'solution_quality'
+            }
+        }
+        
+        # Quantum chemistry methods
+        self.quantum_chemistry_methods = {
+            'vqe_molecular': {
+                'algorithm': 'variational_quantum_eigensolver',
+                'molecular_properties': ['ground_state_energy', 'excited_states'],
+                'basis_sets': ['sto-3g', '6-31g', 'cc-pvdz']
+            },
+            'quantum_phase_estimation': {
+                'algorithm': 'quantum_phase_estimation',
+                'precision': 'controlled_rotation',
+                'applications': ['energy_spectrum', 'molecular_dynamics']
+            },
+            'quantum_walk_simulation': {
+                'algorithm': 'quantum_walk',
+                'applications': ['molecular_dynamics', 'chemical_reactions'],
+                'advantages': ['quantum_speedup', 'coherent_evolution']
+            }
+        }
+        
+        # Quantum noise models
+        self.quantum_noise_models = {
+            'depolarizing': {
+                'description': 'Random Pauli errors',
+                'parameters': ['error_rate'],
+                'mitigation': ['error_correction', 'zero_noise_extrapolation']
+            },
+            'amplitude_damping': {
+                'description': 'Energy loss to environment',
+                'parameters': ['t1_time'],
+                'mitigation': ['dynamical_decoupling', 'error_correction']
+            },
+            'phase_damping': {
+                'description': 'Phase decoherence',
+                'parameters': ['t2_time'],
+                'mitigation': ['echo_sequences', 'error_correction']
+            }
+        }
+        
+        # Entanglement measures
+        self.entanglement_measures = {
+            'concurrence': {
+                'description': 'Two-qubit entanglement measure',
+                'range': [0, 1],
+                'calculation': 'eigenvalues_of_reduced_density_matrix'
+            },
+            'negativity': {
+                'description': 'Entanglement measure based on partial transpose',
+                'range': [0, 0.5],
+                'calculation': 'partial_transpose_eigenvalues'
+            },
+            'von_neumann_entropy': {
+                'description': 'Entanglement entropy',
+                'range': [0, 'log2(d)'],  # d = Hilbert space dimension (number of basis states)
+                'calculation': 'reduced_density_matrix_entropy'
+            }
+        }
+        
+        # Quantum randomness sources
+        self.quantum_randomness_sources = {
+            'measurement': {
+                'description': 'Quantum measurement randomness',
+                'entropy_source': 'superposition_collapse',
+                'rate': 'high',
+                'certification': 'quantum_mechanics'
+            },
+            'quantum_walk': {
+                'description': 'Quantum walk randomness',
+                'entropy_source': 'quantum_walk_evolution',
+                'rate': 'medium',
+                'certification': 'quantum_simulation'
+            },
+            'quantum_optics': {
+                'description': 'Quantum optical randomness',
+                'entropy_source': 'photon_detection',
+                'rate': 'very_high',
+                'certification': 'quantum_optics'
+            }
+        }
+        
+        self.logger.info("Advanced quantum features initialized")
     
     async def create_quantum_circuit(self, name: str,
                                    num_qubits: int,
@@ -413,7 +745,8 @@ class QuantumAIEngine:
         circuit_id = await self.create_quantum_circuit(f"grover_{algorithm_id}", num_qubits)
         
         # Initialize superposition
-        await self.add_quantum_gate(circuit_id, QuantumGate.H, [i] for i in range(num_qubits))
+        for i in range(num_qubits):
+            await self.add_quantum_gate(circuit_id, QuantumGate.H, [i])
         
         # Apply Grover iterations
         for _ in range(num_iterations):
@@ -705,10 +1038,24 @@ class QuantumAIEngine:
                 'total_quantum_states': len(self.quantum_states),
                 'total_quantum_optimizations': len(self.quantum_optimizations),
                 'total_quantum_cryptography': len(self.quantum_cryptography),
+                'total_error_correction_codes': len(self.quantum_error_correction),
+                'total_quantum_ml_models': len(self.quantum_machine_learning),
+                'total_hybrid_systems': len(self.hybrid_quantum_classical),
+                'total_chemistry_simulations': len(self.quantum_chemistry),
+                'total_entanglement_analyses': len(self.quantum_entanglement),
+                'total_randomness_generations': len(self.quantum_randomness),
                 'available_backends': list(self.available_backends.keys()),
                 'qiskit_available': self.qiskit_available,
                 'pennylane_available': self.pennylane_available,
-                'pandas_available': self.pandas_available
+                'pandas_available': self.pandas_available,
+                'cirq_available': self.cirq_available,
+                'tfq_available': self.tfq_available,
+                'pytorch_available': self.pytorch_available,
+                'matplotlib_available': self.matplotlib_available,
+                'plotly_available': self.plotly_available,
+                'stim_available': self.stim_available,
+                'openfermion_available': self.openfermion_available,
+                'pyscf_available': self.pyscf_available
             }
 
 

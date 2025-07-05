@@ -17,11 +17,15 @@ class ContextEntry:
     source: str
     context_type: str
     metadata: Dict[str, Any]
+    # Multi-modal support
+    modality: str = "text"  # text, image, audio, video
+    data: Any = None  # For non-text modalities
 
 class ContextModel:
     """
     Manages conversation context, session state, and contextual information.
     Provides methods for tracking, updating, and retrieving context.
+    Enhanced with hierarchical context layers and multi-modal support.
     """
     
     def __init__(self, max_context_length: int = 100, context_window: int = 10):
@@ -37,40 +41,70 @@ class ContextModel:
         self.context_history = deque(maxlen=max_context_length)
         self.session_data = {}
         self.global_context = {}
+        # Hierarchical context layers
+        self.short_term = deque(maxlen=20)
+        self.medium_term = deque(maxlen=200)
+        self.long_term = deque(maxlen=2000)
         
-    def add_context(self, content: str, source: str = "user", context_type: str = "conversation", metadata: Optional[Dict[str, Any]] = None) -> None:
+    def add_context(self, content: str, source: str = "user", context_type: str = "conversation", metadata: Optional[Dict[str, Any]] = None, modality: str = "text", data: Any = None) -> None:
         """
-        Add a new context entry.
+        Add a new context entry (supports multi-modal and hierarchical layers).
         
         Args:
             content: The context content
             source: Source of the context (user, system, external, etc.)
             context_type: Type of context (conversation, memory, knowledge, etc.)
             metadata: Additional metadata for the context entry
+            modality: Modality of the context (text, image, audio, video)
+            data: Raw data for non-text modalities
         """
         entry = ContextEntry(
             content=content,
             timestamp=time.time(),
             source=source,
             context_type=context_type,
-            metadata=metadata or {}
+            metadata=metadata or {},
+            modality=modality,
+            data=data
         )
         self.context_history.append(entry)
+        self.short_term.append(entry)
+        # Promote to medium/long term if important
+        if metadata and metadata.get("importance", 0) > 0.7:
+            self.medium_term.append(entry)
+        if metadata and metadata.get("importance", 0) > 0.9:
+            self.long_term.append(entry)
         
-    def get_current_context(self, context_type: Optional[str] = None) -> List[ContextEntry]:
+    def get_current_context(self, context_type: Optional[str] = None, modality: Optional[str] = None) -> List[ContextEntry]:
         """
-        Get the current context window.
+        Get the current context window, optionally filtered by type and modality.
         
         Args:
             context_type: Filter by context type (optional)
+            modality: Filter by modality (optional)
             
         Returns:
             List of recent context entries
         """
         recent_entries = list(self.context_history)[-self.context_window:]
         if context_type:
-            return [entry for entry in recent_entries if entry.context_type == context_type]
+            recent_entries = [entry for entry in recent_entries if entry.context_type == context_type]
+        if modality:
+            recent_entries = [entry for entry in recent_entries if entry.modality == modality]
         return recent_entries
+    
+    def get_hierarchical_context(self) -> Dict[str, List[ContextEntry]]:
+        """
+        Get all hierarchical context layers.
+        
+        Returns:
+            Dictionary with short_term, medium_term, long_term context entries
+        """
+        return {
+            "short_term": list(self.short_term),
+            "medium_term": list(self.medium_term),
+            "long_term": list(self.long_term)
+        }
     
     def get_context_summary(self) -> Dict[str, Any]:
         """
@@ -186,10 +220,10 @@ context_model = ContextModel()
 # Export the engine instance with the expected name
 context_engine = context_model
 
-def add_context(content: str, source: str = "user", context_type: str = "conversation", metadata: Optional[Dict[str, Any]] = None) -> None:
+def add_context(content: str, source: str = "user", context_type: str = "conversation", metadata: Optional[Dict[str, Any]] = None, modality: str = "text", data: Any = None) -> None:
     """Add context using the module-level instance."""
-    context_model.add_context(content, source, context_type, metadata)
+    context_model.add_context(content, source, context_type, metadata, modality, data)
 
-def get_current_context(context_type: Optional[str] = None) -> List[ContextEntry]:
+def get_current_context(context_type: Optional[str] = None, modality: Optional[str] = None) -> List[ContextEntry]:
     """Get current context using the module-level instance."""
-    return context_model.get_current_context(context_type)
+    return context_model.get_current_context(context_type, modality)

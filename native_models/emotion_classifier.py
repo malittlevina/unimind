@@ -36,12 +36,39 @@ class EmotionResult:
 
 class EmotionClassifier:
     """
-    Analyzes and classifies emotions in text and other inputs.
+    Analyzes and classifies emotions in text, audio, and vision inputs.
+    Supports multi-modal, multi-language, and SOTA model integration (Hume, OpenAI, Google, DeepFace, etc.).
     Provides emotion detection, sentiment analysis, and emotional state tracking.
     """
     
-    def __init__(self):
-        """Initialize the emotion classifier."""
+    def __init__(self, backend: str = "rule-based"):
+        self.backend = backend
+        # SOTA model stubs (to be implemented)
+        self.hume = None
+        self.openai = None
+        self.google = None
+        self.deepface = None
+        try:
+            from unimind.native_models.free_models.vision.deepface_loader import DeepFaceLoader
+            self.deepface = DeepFaceLoader()
+        except ImportError:
+            pass
+        try:
+            from unimind.native_models.free_models.audio.hume_loader import HumeLoader
+            self.hume = HumeLoader()
+        except ImportError:
+            pass
+        try:
+            from unimind.native_models.free_models.text.openai_emotion_loader import OpenAIEmotionLoader
+            self.openai = OpenAIEmotionLoader()
+        except ImportError:
+            pass
+        try:
+            from unimind.native_models.free_models.text.google_emotion_loader import GoogleEmotionLoader
+            self.google = GoogleEmotionLoader()
+        except ImportError:
+            pass
+        
         self.emotion_keywords = {
             EmotionCategory.JOY: ["happy", "joy", "excited", "great", "wonderful", "amazing", "fantastic", "delighted"],
             EmotionCategory.SADNESS: ["sad", "depressed", "melancholy", "grief", "sorrow", "unhappy", "miserable"],
@@ -67,16 +94,25 @@ class EmotionClassifier:
             "a bit": 0.3
         }
         
-    def classify_emotion(self, text: str) -> EmotionResult:
+    def classify_emotion(self, text: str = None, audio: Any = None, image: Any = None, language: str = "en") -> EmotionResult:
         """
-        Classify emotions in the given text.
-        
-        Args:
-            text: Input text to analyze
-            
-        Returns:
-            EmotionResult containing classification results
+        Classify emotions in text, audio, or image using the selected backend.
         """
+        if self.backend == "rule-based" and text:
+            return self._classify_emotion_text_rule_based(text, language)
+        elif self.backend == "deepface" and image and self.deepface:
+            return self.deepface.classify_emotion(image)
+        elif self.backend == "hume" and audio and self.hume:
+            return self.hume.classify_emotion(audio)
+        elif self.backend == "openai" and text and self.openai:
+            return self.openai.classify_emotion(text, language)
+        elif self.backend == "google" and text and self.google:
+            return self.google.classify_emotion(text, language)
+        else:
+            # Fallback to rule-based
+            return self._classify_emotion_text_rule_based(text or "", language)
+
+    def _classify_emotion_text_rule_based(self, text: str, language: str = "en") -> EmotionResult:
         text_lower = text.lower()
         emotion_scores = {}
         

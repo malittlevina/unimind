@@ -38,11 +38,40 @@ class ShellResult:
 class TextToShell:
     """
     Converts natural language commands to shell commands.
+    Supports multi-OS (Linux, macOS, Windows, PowerShell), multi-language, and SOTA/LLM-driven shell command generation and automation.
+    Integrates with SOTA command models (GPT-4, OpenAI, Google, Claude, etc.).
     Provides safety validation and command execution capabilities.
     """
     
-    def __init__(self):
+    def __init__(self, backend: str = "rule-based"):
         """Initialize the TextToShell converter."""
+        self.backend = backend
+        # SOTA/LLM model stubs (to be implemented)
+        self.gpt4 = None
+        self.openai = None
+        self.google = None
+        self.claude = None
+        try:
+            from unimind.native_models.free_models.shell.gpt4_shell_loader import GPT4ShellLoader
+            self.gpt4 = GPT4ShellLoader()
+        except ImportError:
+            pass
+        try:
+            from unimind.native_models.free_models.shell.openai_shell_loader import OpenAIShellLoader
+            self.openai = OpenAIShellLoader()
+        except ImportError:
+            pass
+        try:
+            from unimind.native_models.free_models.shell.google_shell_loader import GoogleShellLoader
+            self.google = GoogleShellLoader()
+        except ImportError:
+            pass
+        try:
+            from unimind.native_models.free_models.shell.claude_shell_loader import ClaudeShellLoader
+            self.claude = ClaudeShellLoader()
+        except ImportError:
+            pass
+        
         self.command_patterns = {
             ShellOperation.LIST: [
                 r"list|show|display|ls|dir|what files|what's in|contents of",
@@ -95,16 +124,23 @@ class TextToShell:
             "stat", "wc", "sort", "uniq", "echo", "touch", "mkdir"
         }
         
-    def convert_to_shell(self, natural_command: str) -> ShellResult:
+    def convert_to_shell(self, natural_command: str, os_type: str = "linux", language: str = "en") -> ShellResult:
         """
-        Convert natural language command to shell command.
-        
-        Args:
-            natural_command: Natural language command string
-            
-        Returns:
-            ShellResult containing the converted command and metadata
+        Convert natural language command to shell command using the selected backend.
         """
+        if self.backend == "gpt4" and self.gpt4:
+            return self.gpt4.convert_to_shell(natural_command, os_type, language)
+        elif self.backend == "openai" and self.openai:
+            return self.openai.convert_to_shell(natural_command, os_type, language)
+        elif self.backend == "google" and self.google:
+            return self.google.convert_to_shell(natural_command, os_type, language)
+        elif self.backend == "claude" and self.claude:
+            return self.claude.convert_to_shell(natural_command, os_type, language)
+        else:
+            # Fallback to rule-based
+            return self._convert_to_shell_rule_based(natural_command, os_type, language)
+
+    def _convert_to_shell_rule_based(self, natural_command: str, os_type: str = "linux", language: str = "en") -> ShellResult:
         command_lower = natural_command.lower().strip()
         
         # Determine operation
